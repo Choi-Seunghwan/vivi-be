@@ -11,10 +11,8 @@ import { RoomModule } from './room/room.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env',
-      ignoreEnvFile: process.env.NODE_ENV === 'prod',
+      envFilePath: ['.env.dev'],
     }),
-    ,
     AuthModule,
     DatabaseModule,
     UsersModule,

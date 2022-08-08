@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+// import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   private saltOrRounds = 10;
 
-  constructor(private usersService: UsersService) {}
+  // constructor(private usersService: UsersService) {}
 
   async hashPassword(password: string) {
     if (!password.length) throw new Error('none password string');

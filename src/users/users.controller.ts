@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { UserDto } from './user.dto';
 import { UsersService } from './users.service';
-// import { User } from './user.entity';
+import { User } from './user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -16,13 +16,13 @@ export class UsersController {
   }
 
   @Get('/all')
-  async findAll(): Promise<UserDto[] | void> {
+  async findAll(): Promise<User[] | void> {
     const users = await this.userService.findAll();
     return users;
   }
 
   @Get('/')
-  async findOne(@Query() id: number): Promise<UserDto | void> {
+  async findOne(@Query() id: number): Promise<User | void> {
     const user = await this.userService.findOne(id);
     return user;
   }
