@@ -14,8 +14,8 @@ export class RoomService {
     return this.roomRepository.find();
   }
 
-  create(room: Room) {
-    const createdRoom = this.roomRepository.create(room);
+  create({ title }) {
+    const createdRoom = this.roomRepository.create({ title });
     return createdRoom;
   }
 }
