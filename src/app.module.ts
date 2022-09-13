@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { RoomModule } from './room/room.module';
+import { CacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { RoomModule } from './room/room.module';
     DatabaseModule,
     UsersModule,
     RoomModule,
+    CacheModule,
   ],
   controllers: [AppController],
   providers: [AppService],
