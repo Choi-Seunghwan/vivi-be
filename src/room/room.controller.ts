@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
-import { RoomDto } from './dto/room.dto';
+import { JoinRoomDto } from './dto/join-room.dto';
 import { Room } from './room.entity';
 import { RoomService } from './room.service';
 
@@ -16,8 +16,7 @@ export class RoomController {
 
   @Post()
   createRoom(@Body() createRoomDto: CreateRoomDto): any {
-    const room = { title: createRoomDto.title };
-    const craetedRoom = this.roomService.create(room);
+    const craetedRoom = this.roomService.create(createRoomDto);
     return craetedRoom;
   }
 }
