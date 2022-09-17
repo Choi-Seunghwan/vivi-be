@@ -2,7 +2,7 @@ import { User } from 'src/users/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Room {
+export class RoomLog {
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -6,8 +6,9 @@ export class RoomGateway {
   @WebSocketServer()
   server: SocketIoServer;
 
-  @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
+  @SubscribeMessage('createRoom')
+  createRoomHandler(client: any, payload: any): string {
+    
     return 'Hello world!';
   }
 
