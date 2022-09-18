@@ -14,8 +14,12 @@ export class RoomService {
     return this.roomLogRepository.find();
   }
 
+  // @getUser
   create({ title }) {
-    const createdRoom = this.roomLogRepository.create({ title });
-    return createdRoom;
+    const roomLog = this.roomLogRepository.create({ title });
+
+    // const createdRoom: Room =
+
+    // return createdRoom;
   }
 }

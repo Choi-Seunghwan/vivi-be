@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoomController } from './room.controller';
-import { Room } from './room.entity';
+import { RoomLog } from './room.entity';
 import { RoomGateway } from './room.gateway';
 import { RoomService } from './room.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Room])],
+  imports: [TypeOrmModule.forFeature([RoomLog])],
   controllers: [RoomController],
   providers: [RoomService, RoomGateway],
 })
