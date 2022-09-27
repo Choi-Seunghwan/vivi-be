@@ -18,18 +18,17 @@ export class UsersService {
     return createdUser;
   }
 
-  /** 테스트용 */
   async findAll(): Promise<User[]> {
-    const result = await this.userRepository.find();
-    return result;
+    const allUserList: User[] = await this.userRepository.find();
+    return allUserList;
   }
 
-  async findOne(id: number): Promise<User> {
-    const result = await this.userRepository.findOne({
+  async findOneWithEmail(email: string): Promise<User> {
+    const user: User = await this.userRepository.findOne({
       where: {
-        id,
+        email,
       },
     });
-    return result;
+    return user;
   }
 }
