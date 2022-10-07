@@ -5,7 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
-import { RoomModule } from './room/room.module';
+import { RoomsModule } from './rooms/rooms.module';
 import { NetworkModule } from './network/network.module';
 import { CacheModule } from './cache/cache.module';
 
@@ -18,7 +18,7 @@ import { CacheModule } from './cache/cache.module';
     AuthModule,
     DatabaseModule,
     UsersModule,
-    RoomModule,
+    RoomsModule,
     CacheModule,
     NetworkModule,
   ],

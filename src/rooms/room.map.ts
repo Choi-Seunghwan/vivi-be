@@ -17,4 +17,4 @@ class RoomMap {
   }
 }
 
-export default new RoomMap();
+export const roomMap = new RoomMap();

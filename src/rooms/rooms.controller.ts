@@ -1,16 +1,16 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { JoinRoomDto } from './dto/join-room.dto';
-import { RoomService } from './room.service';
-import { RoomLog } from './room.entity';
+import { RoomsService } from './rooms.service';
+import { RoomInfo } from './room-info.entity';
 
 @Controller('room')
-export class RoomController {
-  constructor(private readonly roomService: RoomService) {}
+export class RoomsController {
+  constructor(private readonly roomsService: RoomsService) {}
 
   @Get()
-  async findAll(): Promise<RoomLog[]> {
-    const roomList: RoomLog[] = await this.roomService.findAll();
+  async findAll(): Promise<RoomInfo[]> {
+    const roomList: RoomInfo[] = await this.roomsService.findAll();
     return roomList;
   }
 

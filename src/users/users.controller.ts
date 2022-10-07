@@ -12,20 +12,22 @@ export class UsersController {
   @HttpCode(204)
   async create(@Body() dto: CreateUserDto) {
     const createdUser = await this.userService.createUser(dto);
-    console.log(createdUser);
-    // return createdUser;
   }
+
+  @Post('/signIn')
+  @HttpCode(200)
+  async signIn(@Body() dto: signInUserDto) {}
 
   /** 테스트용 */
-  @Get('/all')
-  async findAll(): Promise<User[] | void> {
-    const users: User[] = await this.userService.findAll();
-    return users;
-  }
+  // @Get('/all')
+  // async findAll(): Promise<User[] | void> {
+  //   const users: User[] = await this.userService.findAll();
+  //   return users;
+  // }
 
-  @Get('/')
-  async findOne(@Query() id: number): Promise<User | void> {
-    const user = await this.userService.findOne(id);
-    return user;
-  }
+  // @Get('/')
+  // async findOne(@Query() id: number): Promise<User | void> {
+  //   const user = await this.userService.findOne(id);
+  //   return user;
+  // }
 }
