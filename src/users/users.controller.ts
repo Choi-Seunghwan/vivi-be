@@ -3,6 +3,7 @@ import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { SignInUserDto } from './dto/sign-in-user.dtio';
 
 @Controller('users')
 export class UsersController {
@@ -16,7 +17,7 @@ export class UsersController {
 
   @Post('/signIn')
   @HttpCode(200)
-  async signIn(@Body() dto: signInUserDto) {}
+  async signIn(@Body() dto: SignInUserDto) {}
 
   /** 테스트용 */
   // @Get('/all')
