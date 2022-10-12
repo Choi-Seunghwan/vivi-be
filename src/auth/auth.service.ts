@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/user.entity';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   private saltOrRounds = 10;
 
-  constructor(private usersService: UsersService) {}
+  constructor(private usersService: UsersService, private jwtService: JwtService) {}
 
   async hashPassword(password: string): Promise<string> {
     if (!password.length) throw new Error('none password string');
@@ -26,5 +27,12 @@ export class AuthService {
       return result;
     }
     return null;
+  }
+
+  async signIn(user: any) {
+    const payload = { id: user.id, username: user.nickname };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 }
