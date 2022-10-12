@@ -1,4 +1,4 @@
-declare class Room {
+declare class RoomInfo {
   id: String;
   title: String;
 }

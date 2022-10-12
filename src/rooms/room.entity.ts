@@ -2,14 +2,14 @@ import { User } from 'src/users/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class RoomInfo {
+export class Room {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   title: String;
 
-  @Column()
+  @Column({ nullable: false })
   host: User;
 
   @Column({
