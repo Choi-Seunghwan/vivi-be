@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { Repository } from 'typeorm';
@@ -9,9 +9,12 @@ import { User } from './user.entity';
 export class UsersService {
   private readonly users: Array<User> = [];
 
-  constructor(@InjectRepository(User) private userRepository: Repository<User>, private authService: AuthService) {}
+  constructor(
+    @Inject(forwardRef(() => AuthService)) private authService: AuthService,
+    @InjectRepository(User) private userRepository: Repository<User>
+  ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(createUserDto: CreateUserDto): Promise<any> {
     const password = createUserDto?.password;
     const hashedPassword = await this.authService.hashPassword(password);
     const createdUser = await this.userRepository.save({ ...createUserDto, password: hashedPassword });

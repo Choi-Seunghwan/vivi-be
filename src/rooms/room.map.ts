@@ -1,3 +1,5 @@
+import { Room } from './room.entity';
+
 class RoomMap {
   private map: Map<String, Room> = new Map();
 
