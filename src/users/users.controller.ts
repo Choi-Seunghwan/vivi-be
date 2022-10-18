@@ -2,20 +2,13 @@ import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { SignInUserDto } from './dto/sign-in-user.dtio';
+import { SignInUserDto } from './dto/sign-in-user.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
-  @Post('/signup')
-  @HttpCode(204)
-  async create(@Body() dto: CreateUserDto) {
-    const createdUser = await this.userService.createUser(dto);
-  }
-
-  @Post('/signIn')
+  @Post('/sign-in')
   @HttpCode(200)
   async signIn(@Body() dto: SignInUserDto) {}
 
