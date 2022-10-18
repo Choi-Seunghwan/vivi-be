@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/user.entity';
@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   private saltOrRounds = 10;
 
-  constructor(private usersService: UsersService, private jwtService: JwtService) {}
+  constructor(@Inject(forwardRef(() => UsersService)) private usersService: UsersService, private jwtService: JwtService) {}
 
   async hashPassword(password: string): Promise<string> {
     if (!password.length) throw new Error('none password string');
