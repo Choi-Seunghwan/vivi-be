@@ -9,9 +9,12 @@ import { LocalAuthGuard } from './local-auth.guard';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  /**
+   * @todo - return 값 확인
+   */
   @Post('/sign-up')
   @HttpCode(204)
-  async signUp(@Body() dto: SignUpDto) {
+  async signUp(@Body() dto: SignUpDto): Promise<User> {
     const createdUser: User = await this.authService.signUp(dto);
     return createdUser;
   }

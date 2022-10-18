@@ -8,10 +8,7 @@ import { User } from './user.entity';
 export class UsersService {
   private readonly users: Array<User> = [];
 
-  constructor(
-    @Inject(forwardRef(() => AuthService)) private authService: AuthService,
-    @InjectRepository(User) private userRepository: Repository<User>
-  ) {}
+  constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
 
   async findAll(): Promise<User[]> {
     const allUserList: User[] = await this.userRepository.find();
