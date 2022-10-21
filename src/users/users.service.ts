@@ -10,17 +10,20 @@ export class UsersService {
 
   constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
 
-  async findAll(): Promise<User[]> {
+  async getAllUsers(): Promise<User[]> {
     const allUserList: User[] = await this.userRepository.find();
     return allUserList;
   }
 
-  async findOneWithEmail(email: string): Promise<User> {
+  async getUser(email: string): Promise<any> {
     const user: User = await this.userRepository.findOne({
       where: {
         email,
       },
     });
-    return user;
+    if (!user) return null; // or throw
+
+    const userInfo = { email: user.email, nickname: user.nickname, creationDate: user.creationDate };
+    return userInfo;
   }
 }
