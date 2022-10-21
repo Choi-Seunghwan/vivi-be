@@ -29,7 +29,10 @@ export class AuthService {
 
   async validateUserPassword(email: string, password: string): Promise<any> {
     const user: User = await this.usersService.findOneWithEmail(email);
-    const compareResult: boolean = await bcrypt.compare(user?.password, password);
+
+    if (!user) return null;
+
+    const compareResult: boolean = await bcrypt.compare(password, user?.password);
 
     if (compareResult) {
       const { password, ...result } = user;
@@ -48,9 +51,9 @@ export class AuthService {
   }
 
   async signIn(dto: SignInDto) {
-    const payload = dto;
+    const { email } = dto;
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign({ email }),
     };
   }
 }
