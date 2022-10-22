@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { NetworkModule } from './network/network.module';
 import { CacheModule } from './cache/cache.module';
+import { ConnectionModule } from './connection/connection.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CacheModule } from './cache/cache.module';
     RoomsModule,
     CacheModule,
     NetworkModule,
+    ConnectionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
