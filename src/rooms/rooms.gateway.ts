@@ -1,20 +1,19 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server as SocketIoServer } from 'socket.io';
+import { HANDLER_ROOM } from 'src/constants';
 
-@WebSocketGateway(null, { path: 'rooms' })
+@WebSocketGateway()
 export class RoomGateway {
   @WebSocketServer()
   server: SocketIoServer;
 
-  @SubscribeMessage('createRoom')
+  @SubscribeMessage(`${HANDLER_ROOM}/createRoom`)
   createRoomHandler(client: any, payload: any): string {
-    console.log('@@ here');
     return 'Hello world!';
   }
 
-  @SubscribeMessage('joinRoom')
+  @SubscribeMessage(`${HANDLER_ROOM}/joinRoom`)
   joinRoomHandler(client: any, payload: any): any {
-    console.log('@@ here2');
     return null;
   }
 }
