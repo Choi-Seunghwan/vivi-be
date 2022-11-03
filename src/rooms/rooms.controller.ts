@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { JoinRoomDto } from './dto/join-room.dto';
 import { RoomsService } from './rooms.service';
@@ -18,8 +18,9 @@ export class RoomsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('/create')
-  createRoom(@Body() createRoomDto: CreateRoomDto): any {
-    const craetedRoom = this.roomsService.create(createRoomDto);
+  createRoom(@Request() req, @Body() createRoomDto: CreateRoomDto): any {
+    const user = req.user;
+    const craetedRoom = this.roomsService.create(user, createRoomDto);
 
     return craetedRoom;
   }

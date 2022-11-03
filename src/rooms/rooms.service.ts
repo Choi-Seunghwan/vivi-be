@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
+import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './room.entity';
 
 @Injectable()
@@ -14,9 +16,8 @@ export class RoomsService {
     return this.RoomInfoRepository.find();
   }
 
-  async create({ title }): Promise<Room> {
-    const createdRoom: Room = this.RoomInfoRepository.create({ title });
-
+  async create(user: User, createRoomDto: CreateRoomDto): Promise<Room> {
+    const createdRoom: Room = this.RoomInfoRepository.create({ host: user, title: createRoomDto.title });
     return createdRoom;
   }
 }

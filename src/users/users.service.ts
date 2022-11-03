@@ -23,7 +23,7 @@ export class UsersService {
     });
     if (!user) return null; // or throw
 
-    const userInfo = { email: user.email, nickname: user.nickname, creationDate: user.creationDate };
+    const userInfo = { email: user.email, nickname: user.nickname, createdDate: user.createdDate };
     return userInfo;
   }
 }

@@ -1,9 +1,10 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Room } from 'src/rooms/room.entity';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ unique: true })
   email: string;
@@ -18,5 +19,8 @@ export class User {
   updateDate: Date;
 
   @CreateDateColumn()
-  creationDate: Date;
+  createdDate: Date;
+
+  @OneToMany(() => Room, (room) => room.host)
+  rooms: Room[];
 }
