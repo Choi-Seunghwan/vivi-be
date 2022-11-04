@@ -17,7 +17,12 @@ export class RoomsService {
   }
 
   async create(user: User, createRoomDto: CreateRoomDto): Promise<Room> {
-    const createdRoom: Room = this.RoomInfoRepository.create({ host: user, title: createRoomDto.title });
-    return createdRoom;
+    try {
+      const createdRoom: Room = this.RoomInfoRepository.create({ host: user, title: createRoomDto.title });
+      await this.RoomInfoRepository.save(createdRoom);
+      return createdRoom;
+    } catch (e) {
+      throw e;
+    }
   }
 }

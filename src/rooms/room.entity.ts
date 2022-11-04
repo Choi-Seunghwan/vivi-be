@@ -3,13 +3,12 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, CreateDat
 
 @Entity()
 export class Room {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Column({ nullable: false })
   title: String;
 
-  // @Column({ nullable: false })
   @ManyToOne(() => User, (user) => user.rooms)
   @JoinColumn({ name: 'user_id' })
   host: User;

@@ -1,9 +1,9 @@
 import { Room } from 'src/rooms/room.entity';
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Column({ unique: true })
@@ -22,5 +22,6 @@ export class User {
   createdDate: Date;
 
   @OneToMany(() => Room, (room) => room.host)
+  @JoinColumn({ name: 'room_id' })
   rooms: Room[];
 }

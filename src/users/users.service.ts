@@ -15,13 +15,15 @@ export class UsersService {
     return allUserList;
   }
 
-  async getUser(email: string): Promise<any> {
+  async getUser(email: string, all: boolean = false): Promise<any> {
     const user: User = await this.userRepository.findOne({
       where: {
         email,
       },
     });
     if (!user) return null; // or throw
+
+    if (all) return user;
 
     const userInfo = { email: user.email, nickname: user.nickname, createdDate: user.createdDate };
     return userInfo;
