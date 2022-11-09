@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, CreateDat
 
 @Entity()
 export class Room {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ nullable: false })

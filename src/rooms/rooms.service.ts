@@ -9,17 +9,17 @@ import { Room } from './room.entity';
 export class RoomsService {
   constructor(
     @InjectRepository(Room)
-    private RoomInfoRepository: Repository<Room>
+    private roomRepository: Repository<Room>
   ) {}
 
   findAll(): Promise<Room[]> {
-    return this.RoomInfoRepository.find();
+    return this.roomRepository.find();
   }
 
   async create(user: User, createRoomDto: CreateRoomDto): Promise<Room> {
     try {
-      const createdRoom: Room = this.RoomInfoRepository.create({ host: user, title: createRoomDto.title });
-      await this.RoomInfoRepository.save(createdRoom);
+      const createdRoom: Room = this.roomRepository.create({ host: user, title: createRoomDto.title });
+      await this.roomRepository.save(createdRoom);
       return createdRoom;
     } catch (e) {
       throw e;

@@ -1,23 +1,29 @@
 import { OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { Server as SocketIoServer } from 'socket.io';
+import { Server as SocketIoServer, Socket } from 'socket.io';
 import { HANDLER_ROOM } from 'src/constants';
+import { CreateRoomPayload } from './payload/create-room.payload';
+import { RoomsGatewayService } from './rooms.gateway.service';
 
-@WebSocketGateway()
-export class RoomGateway implements OnGatewayConnection {
+@WebSocketGateway({
+  namespace: 'rooms',
+})
+export class RoomsGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: SocketIoServer;
 
-  handleConnection(client) {
+  constructor(private readonly roomGatewayService: RoomsGatewayService) {}
+
+  handleConnection(client: Socket) {
     // hook
   }
 
   @SubscribeMessage(`${HANDLER_ROOM}/createRoom`)
-  createRoomHandler(client: any, payload: any): string {
-    return 'Hello world!';
+  async createRoomHandler(client: Socket, payload: CreateRoomPayload) {
+    await this.roomGatewayService.onCreateRoom(client, payload);
   }
 
   @SubscribeMessage(`${HANDLER_ROOM}/joinRoom`)
-  joinRoomHandler(client: any, payload: any): any {
+  joinRoomHandler(client: Socket, payload: any): any {
     return null;
   }
 }
