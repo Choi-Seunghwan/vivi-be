@@ -7,7 +7,7 @@ export class Room {
   id: string;
 
   @Column({ nullable: false })
-  title: String;
+  title: string;
 
   @ManyToOne(() => User, (user) => user.rooms)
   @JoinColumn({ name: 'user_id' })

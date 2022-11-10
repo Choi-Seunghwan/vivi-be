@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { Room } from './room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WsException } from '@nestjs/websockets';
+import { createRoomInfo } from './room.utils';
+import { roomMap } from './room.map';
 
 @Injectable()
 export class RoomsGatewayService {
@@ -14,8 +16,11 @@ export class RoomsGatewayService {
     const { userId, roomId } = payload;
 
     const room: Room = await this.roomRepository.findOne({ where: { id: roomId } });
-
     if (!room) throw new WsException('roomId error');
+
+    const roomInfo: RoomInfo = createRoomInfo(room);
+
+    roomMap.setRoom(roomId, roomInfo);
   }
 
   async onJoinRoom(client: Socket, payload) {}
