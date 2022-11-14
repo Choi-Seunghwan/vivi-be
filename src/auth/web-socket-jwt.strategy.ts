@@ -11,7 +11,7 @@ export class WebSocketJwtStrategy extends PassportStrategy(Strategy, 'webSocketJ
   constructor(private configService: ConfigService, private authService: AuthService) {
     const JWT_PRIVATE_KEY = configService.get('JWT_PRIVATE_KEY');
     super({
-      jwtFromRequest: ExtractJwt.fromUrlQueryParameter('token'),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: JWT_PRIVATE_KEY,
     });
