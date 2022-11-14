@@ -15,7 +15,7 @@ export class UsersService {
     return allUserList;
   }
 
-  async getUser(email: string, all: boolean = false): Promise<any> {
+  async getUser(email: string, allInfo: boolean = false): Promise<any> {
     const user: User = await this.userRepository.findOne({
       where: {
         email,
@@ -23,7 +23,7 @@ export class UsersService {
     });
     if (!user) return null; // or throw
 
-    if (all) return user;
+    if (allInfo) return user;
 
     const userInfo = { email: user.email, nickname: user.nickname, createdDate: user.createdDate };
     return userInfo;

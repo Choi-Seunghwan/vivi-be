@@ -23,5 +23,10 @@ export class RoomsGatewayService {
     roomMap.setRoom(roomId, roomInfo);
   }
 
+  async getRoomList(client: Socket) {
+    const roomList = await this.roomRepository.find();
+    return roomList;
+  }
+
   async onJoinRoom(client: Socket, payload) {}
 }

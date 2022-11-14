@@ -58,7 +58,7 @@ export class AuthService {
   async signIn(dto: SignInDto) {
     const { email } = dto;
     return {
-      access_token: this.jwtService.sign({ email }),
+      access_token: await this.jwtService.signAsync({ email }),
     };
   }
 }
