@@ -7,7 +7,7 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { NetworkModule } from './network/network.module';
-import { CacheModule } from './cache/cache.module';
+import { AppCacheModule } from './cache/cache.module';
 import { ConnectionModule } from './connection/connection.module';
 
 @Module({
@@ -16,11 +16,11 @@ import { ConnectionModule } from './connection/connection.module';
       isGlobal: true,
       envFilePath: ['.env.dev'],
     }),
+    AppCacheModule,
     AuthModule,
     DatabaseModule,
     UsersModule,
     RoomsModule,
-    CacheModule,
     NetworkModule,
     ConnectionModule,
   ],
