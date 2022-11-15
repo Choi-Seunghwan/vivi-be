@@ -23,5 +23,6 @@ import { ENV_REDIS_HOST, ENV_REDIS_PORT } from 'src/constants';
   ],
   providers: [CacheService],
   controllers: [CacheController],
+  exports: [CacheService],
 })
 export class AppCacheModule {}

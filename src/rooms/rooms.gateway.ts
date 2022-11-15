@@ -23,7 +23,6 @@ export class RoomsGateway implements OnGatewayConnection {
   @UseGuards(webSocketJwtAuthGuard)
   @SubscribeMessage(`${HANDLER_ROOM}/list`)
   async getRoomList(client: Socket) {
-    console.log('@@ list');
     const roomList = await this.roomGatewayService.getRoomList(client);
     return roomList;
   }

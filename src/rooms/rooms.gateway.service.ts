@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { CreateRoomPayload } from './payload/create-room.payload';
 import { Repository } from 'typeorm';
@@ -6,11 +6,11 @@ import { Room } from './room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WsException } from '@nestjs/websockets';
 import { createRoomInfo } from './room.utils';
-import { roomMap } from './room.map';
+import { CacheService } from 'src/cache/cache.service';
 
 @Injectable()
 export class RoomsGatewayService {
-  constructor(@InjectRepository(Room) private roomRepository: Repository<Room>) {}
+  constructor(@InjectRepository(Room) private roomRepository: Repository<Room>, private cacheService: CacheService) {}
 
   async onCreateRoom(client: Socket, payload: CreateRoomPayload) {
     const { userId, roomId } = payload;
@@ -20,7 +20,7 @@ export class RoomsGatewayService {
 
     const roomInfo: RoomInfo = createRoomInfo(room);
 
-    roomMap.setRoom(roomId, roomInfo);
+    this.cacheService.set();
   }
 
   async getRoomList(client: Socket) {

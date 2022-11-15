@@ -5,9 +5,10 @@ import { Room } from './room.entity';
 import { RoomsGateway } from './rooms.gateway';
 import { RoomsService } from './rooms.service';
 import { RoomsGatewayService } from './rooms.gateway.service';
+import { AppCacheModule } from 'src/cache/cache.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Room])],
+  imports: [TypeOrmModule.forFeature([Room]), AppCacheModule],
   controllers: [RoomsController],
   providers: [RoomsService, RoomsGateway, RoomsGatewayService],
 })
