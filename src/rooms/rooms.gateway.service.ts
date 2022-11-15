@@ -20,7 +20,7 @@ export class RoomsGatewayService {
 
     const roomInfo: RoomInfo = createRoomInfo(room);
 
-    this.cacheService.set();
+    // this.cacheService.set();
   }
 
   async getRoomList(client: Socket) {
