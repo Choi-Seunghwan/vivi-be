@@ -7,20 +7,27 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { WsException } from '@nestjs/websockets';
 import { createRoomInfo } from './room.utils';
 import { CacheService } from 'src/cache/cache.service';
+import { NAMESPACE_ROOM } from 'src/constants';
+import { joinSocketRoom } from 'src/utils/socket.util';
 
 @Injectable()
 export class RoomsGatewayService {
   constructor(@InjectRepository(Room) private roomRepository: Repository<Room>, private cacheService: CacheService) {}
 
   async onCreateRoom(client: Socket, payload: CreateRoomPayload) {
-    const { userId, roomId } = payload;
+    try {
+      const { roomId } = payload;
+      const room: Room = await this.roomRepository.findOne({ where: { id: roomId } });
 
-    const room: Room = await this.roomRepository.findOne({ where: { id: roomId } });
-    if (!room) throw new WsException('roomId error');
+      if (!room) throw new WsException('roomId error');
 
-    const roomInfo: RoomInfo = createRoomInfo(room);
+      const roomInfo: RoomInfo = createRoomInfo(room);
 
-    // this.cacheService.set();
+      await this.cacheService.set(NAMESPACE_ROOM, 'room', roomInfo);
+      await joinSocketRoom(client, roomId);
+    } catch (e) {
+      throw e;
+    }
   }
 
   async getRoomList(client: Socket) {
