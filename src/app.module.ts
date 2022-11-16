@@ -14,7 +14,7 @@ import { ConnectionModule } from './connection/connection.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env.local'],
+      envFilePath: ['.env.local', `.env.${process.env.NODE_ENV}`],
     }),
     AppCacheModule,
     AuthModule,
