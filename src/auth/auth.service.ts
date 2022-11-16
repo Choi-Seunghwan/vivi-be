@@ -27,8 +27,13 @@ export class AuthService {
     return hashedPassword;
   }
 
+  async validateUser(email: string): Promise<User> {
+    const user: User = await this.usersService.getUser(email, true);
+    return user;
+  }
+
   async validateUserPassword(email: string, password: string): Promise<any> {
-    const user: User = await this.usersService.getUser(email);
+    const user: User = await this.usersService.getUser(email, true);
 
     if (!user) return null;
 
@@ -53,7 +58,7 @@ export class AuthService {
   async signIn(dto: SignInDto) {
     const { email } = dto;
     return {
-      access_token: this.jwtService.sign({ email }),
+      access_token: await this.jwtService.signAsync({ email }),
     };
   }
 }

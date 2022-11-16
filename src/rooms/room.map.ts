@@ -1,9 +1,10 @@
-import { Room } from './room.entity';
-
 class RoomMap {
-  private map: Map<String, Room> = new Map();
+  /**
+   * key: roomId
+   */
+  private map: Map<string, RoomInfo> = new Map();
 
-  setRoom(key: String, room: Room): boolean {
+  setRoom(key: string, room: RoomInfo): boolean {
     try {
       this.map.set(key, room);
 
@@ -13,8 +14,8 @@ class RoomMap {
     }
   }
 
-  getRoom(key: String): Room {
-    const room: Room = this.map.get(key);
+  getRoom(key: string): RoomInfo {
+    const room: RoomInfo = this.map.get(key);
     return room;
   }
 }

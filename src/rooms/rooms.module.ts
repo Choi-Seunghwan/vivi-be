@@ -2,12 +2,14 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoomsController } from './rooms.controller';
 import { Room } from './room.entity';
-import { RoomGateway } from './rooms.gateway';
+import { RoomsGateway } from './rooms.gateway';
 import { RoomsService } from './rooms.service';
+import { RoomsGatewayService } from './rooms.gateway.service';
+import { AppCacheModule } from 'src/cache/cache.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Room])],
+  imports: [TypeOrmModule.forFeature([Room]), AppCacheModule],
   controllers: [RoomsController],
-  providers: [RoomsService, RoomGateway],
+  providers: [RoomsService, RoomsGateway, RoomsGatewayService],
 })
 export class RoomsModule {}

@@ -1,15 +1,16 @@
 import { User } from 'src/users/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, CreateDateColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Room {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: false })
-  title: String;
+  title: string;
 
-  @Column({ nullable: false })
+  @ManyToOne(() => User, (user) => user.rooms)
+  @JoinColumn({ name: 'user_id' })
   host: User;
 
   @Column({
@@ -22,6 +23,6 @@ export class Room {
   })
   endDate: Date;
 
-  @Column({ default: () => Date.now() })
-  creationDate: Date;
+  @CreateDateColumn()
+  createdDate: Date;
 }

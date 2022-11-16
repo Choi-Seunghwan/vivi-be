@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Request, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -20,6 +20,10 @@ export class UsersController {
     const payload: JwtPayload = req?.user;
     const { email } = payload;
     const userInfo = await this.userService.getUser(email);
+
+    if (!userInfo) {
+      throw new HttpException('not found', HttpStatus.NOT_FOUND);
+    }
 
     return userInfo;
   }

@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
+import { WebSocketJwtStrategy } from './web-socket-jwt.strategy';
 
 @Module({
   imports: [
@@ -24,8 +25,8 @@ import { JwtStrategy } from './jwt.strategy';
       }),
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, WebSocketJwtStrategy],
   controllers: [AuthController],
-  exports: [AuthService, LocalStrategy, JwtStrategy],
+  exports: [AuthService, LocalStrategy, JwtStrategy, WebSocketJwtStrategy],
 })
 export class AuthModule {}
