@@ -16,8 +16,7 @@ export class RoomsGateway implements OnGatewayConnection {
   constructor(private readonly roomGatewayService: RoomsGatewayService) {}
 
   handleConnection(client: Socket) {
-    // hook
-    console.log('@@#');
+    console.log('connection : ', client.id);
   }
 
   @UseGuards(webSocketJwtAuthGuard)

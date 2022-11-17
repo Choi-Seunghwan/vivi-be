@@ -14,6 +14,11 @@ import { joinSocketRoom } from 'src/utils/socket.util';
 export class RoomsGatewayService {
   constructor(@InjectRepository(Room) private roomRepository: Repository<Room>, private cacheService: CacheService) {}
 
+  async getRoomList(client: Socket) {
+    const roomList = await this.roomRepository.find();
+    return roomList;
+  }
+
   async onCreateRoom(client: Socket, payload: CreateRoomPayload) {
     try {
       const { roomId } = payload;
@@ -30,10 +35,18 @@ export class RoomsGatewayService {
     }
   }
 
-  async getRoomList(client: Socket) {
-    const roomList = await this.roomRepository.find();
-    return roomList;
+  async onJoinRoom(client: Socket, payload) {
+    try {
+      const { roomId } = payload;
+    } catch (e) {
+      throw e;
+    }
   }
 
-  async onJoinRoom(client: Socket, payload) {}
+  async onLeaveRoom(client: Socket, payload) {
+    try {
+    } catch (e) {
+      throw e;
+    }
+  }
 }

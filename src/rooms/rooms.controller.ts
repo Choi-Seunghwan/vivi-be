@@ -5,6 +5,7 @@ import { RoomsService } from './rooms.service';
 import { Room } from './room.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CloseRoomDto } from './dto/close-room.dto';
 
 @Controller('room')
 export class RoomsController {
@@ -18,10 +19,19 @@ export class RoomsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('/create')
-  createRoom(@Request() req, @Body() createRoomDto: CreateRoomDto): any {
+  async createRoom(@Request() req, @Body() createRoomDto: CreateRoomDto) {
     const user = req.user;
-    const craetedRoom = this.roomsService.create(user, createRoomDto);
+    const craetedRoom = await this.roomsService.create(user, createRoomDto);
 
     return craetedRoom;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/close')
+  async closeRoom(@Request() req, @Body() closeRoomDto: CloseRoomDto) {
+    const user = req.user;
+    const result = await this.roomsService.close(user, closeRoomDto);
+
+    return result;
   }
 }

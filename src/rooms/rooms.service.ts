@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
+import { CloseRoomDto } from './dto/close-room.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './room.entity';
 
@@ -24,5 +25,10 @@ export class RoomsService {
     } catch (e) {
       throw e;
     }
+  }
+
+  async close(usre: User, closeRoomDto: CloseRoomDto): Promise<any> {
+    try {
+    } catch (e) {}
   }
 }
