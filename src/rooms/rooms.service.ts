@@ -5,10 +5,10 @@ import { Repository } from 'typeorm';
 import { CloseRoomDto } from './dto/close-room.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './room.entity';
-import { isRoomHost, roomInfoFactory } from './room.utils';
+import { isRoomHost, isRoomStatusInProgress, roomInfoFactory } from './room.utils';
 import { NAMESPACE_ROOM } from 'src/constants';
 import { CacheService } from 'src/cache/cache.service';
-import { RoomNotFoundException } from './exceptions/room.exception';
+import { RoomNotFoundException, RoomStatusException } from './exceptions/room.exception';
 
 @Injectable()
 export class RoomsService {
@@ -43,6 +43,7 @@ export class RoomsService {
       const room: Room = await this.roomRepository.findOne({ where: { id: roomId } });
 
       if (isRoomHost(user, room)) throw new RoomNotFoundException();
+      if (!isRoomStatusInProgress(room)) throw new RoomStatusException();
 
       const endDate = new Date();
       room.endDate = endDate;

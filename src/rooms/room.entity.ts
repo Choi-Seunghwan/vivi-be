@@ -1,3 +1,4 @@
+import { ROOM_STATUS } from 'src/constants/room.constant';
 import { User } from 'src/users/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, CreateDateColumn, ManyToOne } from 'typeorm';
 
@@ -12,6 +13,9 @@ export class Room {
   @ManyToOne(() => User, (user) => user.rooms)
   @JoinColumn({ name: 'user_id' })
   host: User;
+
+  @Column({ enum: [ROOM_STATUS.WAITING, ROOM_STATUS.IN_PROGRESS, ROOM_STATUS.CLOSED] })
+  status: ROOM_STATUS;
 
   @Column({
     nullable: true,
