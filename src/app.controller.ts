@@ -8,15 +8,15 @@ export class AppController {
 
   @Get('/test1')
   async teset1() {
-    const result = await this.cacheManager.set('test1', 'hello');
-    console.log('@@', result);
-    return result;
+    // const result = await this.cacheManager.set('test1', 'hello');
+    // console.log('@@', result);
+    // return result;
   }
 
   @Get('/test2')
   async test2() {
-    const result = await this.cacheManager.get('test1');
-    console.log('@@', result);
-    return result;
+    // const result = await this.cacheManager.get('test1');
+    // console.log('@@', result);
+    // return result;
   }
 }

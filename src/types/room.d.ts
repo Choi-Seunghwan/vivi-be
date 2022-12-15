@@ -1,4 +1,4 @@
 declare class RoomInfo {
-  roomId: string;
+  roomId: String;
   title: string;
 }

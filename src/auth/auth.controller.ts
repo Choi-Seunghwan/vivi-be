@@ -25,6 +25,6 @@ export class AuthController {
   async signIn(@Request() req, @Body() dto: SignInDto): Promise<any> {
     const user: User = req.user;
     const payload = await this.authService.signIn(dto);
-    return { ...user, ...payload };
+    return { email: user.email, nickname: user.nickname, createdDate: user.createdDate, ...payload };
   }
 }
