@@ -1,0 +1,7 @@
+export const ROOM_STATUS = {
+  WAITING: 'WAITING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  CLOSED: 'CLOSED',
+};
+
+export type ROOM_STATUS = 'WAITING' | 'IN_PROGRESS' | 'CLOSED';
