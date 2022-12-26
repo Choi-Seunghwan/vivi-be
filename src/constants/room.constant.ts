@@ -3,5 +3,3 @@ export const ROOM_STATUS = {
   IN_PROGRESS: 'IN_PROGRESS',
   CLOSED: 'CLOSED',
 };
-
-export type ROOM_STATUS = 'WAITING' | 'IN_PROGRESS' | 'CLOSED';

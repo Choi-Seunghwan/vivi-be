@@ -5,6 +5,7 @@ import { HANDLER_CONNECTION } from 'src/constants';
 export class ConnectionGateway implements OnGatewayConnection {
   handleConnection(client) {
     // hook
+    console.log('@@ here');
   }
 
   @SubscribeMessage(`${HANDLER_CONNECTION}/message`)

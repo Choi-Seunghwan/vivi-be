@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, InternalServerErrorException, Post, Request, UseGuards } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { JoinRoomDto } from './dto/join-room.dto';
 import { RoomsService } from './rooms.service';
@@ -6,6 +6,7 @@ import { Room } from './room.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CloseRoomDto } from './dto/close-room.dto';
 import { RoomNotFoundException, RoomStatusException } from './exceptions/room.exception';
+import { startRoomDto } from './dto/start-room-dto';
 
 @Controller('room')
 export class RoomsController {
@@ -27,6 +28,21 @@ export class RoomsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('/start')
+  async startRoom(@Request() req, @Body() startRoomDto: startRoomDto) {
+    try {
+      const user = req.user;
+      const result = await this.roomsService.start(user, startRoomDto);
+
+      return result;
+    } catch (e) {
+      if (e === RoomNotFoundException) throw new BadRequestException();
+      if (e === RoomStatusException) throw new BadRequestException();
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('/close')
   async closeRoom(@Request() req, @Body() closeRoomDto: CloseRoomDto) {
     try {
@@ -37,7 +53,7 @@ export class RoomsController {
     } catch (e) {
       if (e === RoomNotFoundException) throw new BadRequestException();
       if (e === RoomStatusException) throw new BadRequestException();
-      throw e;
+      throw new InternalServerErrorException();
     }
   }
 }

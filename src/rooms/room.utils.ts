@@ -15,6 +15,6 @@ export const isRoomStatusInProgress = (room: Room): boolean => {
   return getRoomStatus(room) === ROOM_STATUS.IN_PROGRESS;
 };
 
-export const getRoomStatus = (room: Room): ROOM_STATUS => {
+export const getRoomStatus = (room: Room): string => {
   return room?.status;
 };

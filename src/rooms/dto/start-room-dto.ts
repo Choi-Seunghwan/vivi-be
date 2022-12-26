@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateRoomPayload {
+export class startRoomDto {
   @IsNotEmpty()
   @IsString()
-  title: string;
+  roomId: string;
 }

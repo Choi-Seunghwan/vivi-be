@@ -17,7 +17,7 @@ export class WebSocketJwtStrategy extends PassportStrategy(Strategy, 'webSocketJ
     });
   }
 
-  async validate(payload: JwtPayload) {
+  async validate(payload: JwtPayload): Promise<UserInfo | boolean> {
     const { email } = payload;
     const user: User = await this.authService.validateUser(email);
 

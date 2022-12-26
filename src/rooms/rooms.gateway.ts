@@ -19,18 +19,19 @@ export class RoomsGateway implements OnGatewayConnection {
     console.log('connection : ', client.id);
   }
 
-  @UseGuards(webSocketJwtAuthGuard)
   @SubscribeMessage(`${HANDLER_ROOM}/list`)
   async getRoomList(client: Socket) {
     const roomList = await this.roomGatewayService.getRoomList(client);
     return roomList;
   }
 
+  @UseGuards(webSocketJwtAuthGuard)
   @SubscribeMessage(`${HANDLER_ROOM}/createRoom`)
   async createRoomHandler(client: Socket, payload: CreateRoomPayload) {
     await this.roomGatewayService.onCreateRoom(client, payload);
   }
 
+  @UseGuards(webSocketJwtAuthGuard)
   @SubscribeMessage(`${HANDLER_ROOM}/joinRoom`)
   joinRoomHandler(client: Socket, payload: any): any {
     return null;

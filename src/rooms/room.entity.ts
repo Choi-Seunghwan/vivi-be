@@ -14,8 +14,8 @@ export class Room {
   @JoinColumn({ name: 'user_id' })
   host: User;
 
-  @Column({ enum: [ROOM_STATUS.WAITING, ROOM_STATUS.IN_PROGRESS, ROOM_STATUS.CLOSED] })
-  status: ROOM_STATUS;
+  @Column({ enum: [ROOM_STATUS.WAITING, ROOM_STATUS.IN_PROGRESS, ROOM_STATUS.CLOSED], default: ROOM_STATUS.WAITING })
+  status: string;
 
   @Column({
     nullable: true,

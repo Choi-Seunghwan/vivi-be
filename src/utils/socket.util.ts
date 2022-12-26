@@ -1,5 +1,10 @@
 import { Socket } from 'socket.io';
 
+export const getUserInfoFromSocket = (socket: Socket): UserInfo | undefined => {
+  const userInfo: UserInfo = socket?.handshake?.['user'];
+  return userInfo;
+};
+
 export const joinSocketRoom = async (socket: Socket, roomId: string) => {
   try {
     socket.rooms;
