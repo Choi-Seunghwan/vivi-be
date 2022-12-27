@@ -1,5 +1,4 @@
 import { Body, Controller, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/users/user.entity';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in-dto';
@@ -14,7 +13,7 @@ export class AuthController {
    * @todo - return 값 확인
    */
   @Post('/sign-up')
-  @HttpCode(204)
+  @HttpCode(201)
   async signUp(@Body() dto: SignUpDto): Promise<User> {
     const createdUser: User = await this.authService.signUp(dto);
     return createdUser;
@@ -22,9 +21,11 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/sign-in')
-  async signIn(@Request() req, @Body() dto: SignInDto): Promise<any> {
+  @HttpCode(200)
+  async signIn(@Request() req, @Body() dto: SignInDto): Promise<UserInfo> {
     const user: User = req.user;
-    const payload = await this.authService.signIn(dto);
-    return { email: user.email, nickname: user.nickname, createdDate: user.createdDate, ...payload };
+    const token = await this.authService.signIn(dto);
+    const userInfo: UserInfo = { id: user.id, email: user.email, nickname: user.nickname, createdDate: user.createdDate, token };
+    return userInfo;
   }
 }

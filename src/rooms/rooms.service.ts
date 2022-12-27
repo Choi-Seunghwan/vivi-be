@@ -11,6 +11,7 @@ import { CacheService } from 'src/cache/cache.service';
 import { RoomNotFoundException, RoomStatusException } from './exceptions/room.exception';
 import { ROOM_STATUS } from 'src/constants/room.constant';
 import { startRoomDto } from './dto/start-room-dto';
+import { RoomInfo } from './room.info';
 
 @Injectable()
 export class RoomsService {
@@ -29,7 +30,7 @@ export class RoomsService {
       const createdRoom: Room = this.roomRepository.create({ host: user, title: createRoomDto.title });
       await this.roomRepository.save(createdRoom);
 
-      const roomInfo: RoomInfo = roomInfoFactory(createdRoom);
+      const roomInfo: RoomInfo = roomInfoFactory(createdRoom, user);
 
       await this.cacheService.set(NAMESPACE_ROOM, 'room', roomInfo);
 

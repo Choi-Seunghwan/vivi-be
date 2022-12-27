@@ -1,3 +1,5 @@
+import { RoomInfo } from './room.info';
+
 class RoomMap {
   /**
    * key: roomId

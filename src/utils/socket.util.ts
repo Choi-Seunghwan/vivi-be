@@ -9,6 +9,7 @@ export const getUserInfoFromSocket = (socket: Socket): UserInfo | undefined => {
 export const joinSocketRoom = async (socket: Socket, roomId: string): Promise<void> => {
   try {
     // socket.rooms;
+    // if (true) throw new AlreadyJoinedRoomException();
     await socket.join(roomId);
   } catch (e) {
     throw new SocketJoinFailException(e);

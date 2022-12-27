@@ -11,6 +11,8 @@ import { roomInfoFactory } from './room.utils';
 import { NAMESPACE_ROOM } from 'src/constants';
 import { joinRoomPayload } from './payload/join-room.payload';
 import { leaveRoomPayload } from './payload/leave-room.payload';
+import { SocketJoinFailException } from 'src/common/common.exception';
+import { RoomInfo } from './room.info';
 
 @Injectable()
 export class RoomsGatewayService {
@@ -48,13 +50,12 @@ export class RoomsGatewayService {
       // const userInfo: UserInfo = getUserInfoFromSocket(client);
       // const room: Room = await this.roomRepository.findOne({ where: { id: roomId } });
 
-      const roomInfo: RoomInfo;
+      const roomInfo: RoomInfo = await this.cacheService.getRoomInfo(roomId);
 
-      if (!room) throw new RoomNotFoundException();
+      if (!roomInfo) throw new RoomNotFoundException();
 
-      await joinSocketRoom(client, room.id);
+      const result = await joinSocketRoom(client, roomInfo.roomId);
 
-      if (true) throw new AlreadyJoinedRoomException();
       return true;
     } catch (e) {
       throw e;

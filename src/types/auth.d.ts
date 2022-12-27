@@ -6,6 +6,7 @@ declare type UserInfo = {
   id: string;
   email: string;
   nickname: string;
-  updateDate: Date;
-  createdDate: Date;
+  updateDate?: Date;
+  createdDate?: Date;
+  token?: string;
 };
