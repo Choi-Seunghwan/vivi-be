@@ -2,12 +2,12 @@ import { ROOM_STATUS } from 'src/constants/room.constant';
 import { User } from 'src/users/user.entity';
 import { Room } from './room.entity';
 
-export const roomInfoFactory = (room: Room): RoomInfo => {
-  const roomInfo: RoomInfo = { roomId: room.id, title: room.title };
+export const roomInfoFactory = (room: Room, userInfo: UserInfo): RoomInfo => {
+  const roomInfo: RoomInfo = { roomId: room.id, title: room.title, host: userInfo };
   return roomInfo;
 };
 
-export const isRoomHost = (user: User, room: Room): boolean => {
+export const isRoomHost = (user: UserInfo, room: Room): boolean => {
   return room?.host?.id === user?.id;
 };
 
