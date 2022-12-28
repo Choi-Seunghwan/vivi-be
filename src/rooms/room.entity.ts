@@ -1,6 +1,7 @@
+import { ChatMessage } from 'src/chat/chat-message.entity';
 import { ROOM_STATUS } from 'src/constants/room.constant';
 import { User } from 'src/users/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, CreateDateColumn, ManyToOne, OneToMany, JoinTable } from 'typeorm';
 
 @Entity()
 export class Room {
@@ -13,6 +14,10 @@ export class Room {
   @ManyToOne(() => User, (user) => user.rooms)
   @JoinColumn({ name: 'user_id' })
   host: User;
+
+  @OneToMany(() => ChatMessage, (chatMessage) => chatMessage.room)
+  @JoinTable()
+  messages: ChatMessage[];
 
   @Column({ enum: [ROOM_STATUS.WAITING, ROOM_STATUS.IN_PROGRESS, ROOM_STATUS.CLOSED], default: ROOM_STATUS.WAITING })
   status: string;

@@ -9,6 +9,7 @@ import { RoomsModule } from './rooms/rooms.module';
 import { NetworkModule } from './network/network.module';
 import { AppCacheModule } from './cache/cache.module';
 import { ConnectionModule } from './connection/connection.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ConnectionModule } from './connection/connection.module';
     RoomsModule,
     NetworkModule,
     ConnectionModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
