@@ -1,5 +1,5 @@
 import { OnGatewayConnection, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
-import { HANDLER_CONNECTION } from 'src/constants';
+import { HANDLER_CONNECTION } from 'src/constants/event-handler.constant';
 
 @WebSocketGateway()
 export class ConnectionGateway implements OnGatewayConnection {

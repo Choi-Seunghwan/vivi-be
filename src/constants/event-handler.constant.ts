@@ -1,0 +1,16 @@
+/**
+ * WS Event Handler Constants
+ */
+
+export const HANDLER_CONNECTION = 'CONNECTION';
+export const HANDLER_ROOM = {
+  ROOM: 'ROOM',
+  LIST: 'ROOM/LIST',
+  CREATE_ROOM: 'ROOM/CREATE_ROOM',
+  JOIN_ROOM: 'ROOM/JOIN_ROOM',
+  LEAVE_ROOM: 'ROOM/LEAVE_ROOM',
+};
+export const HANDLER_CHAT = {
+  CHAT: 'CHAT',
+  SEND_ROOM_CHAT_MESSAGE: 'CHAT/SEND_ROOM_CHAT_MESSAGE',
+};

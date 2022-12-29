@@ -15,6 +15,7 @@ export class ChatMessage {
   message: string;
 
   @OneToMany(() => Room, (room) => room.id)
+  @JoinColumn({ name: 'room_id' })
   room: Room;
 
   @CreateDateColumn()
