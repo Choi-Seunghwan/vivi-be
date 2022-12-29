@@ -9,9 +9,7 @@ import { WsException } from '@nestjs/websockets';
 import { joinRoomPayload } from './payload/join-room.payload';
 import { leaveRoomPayload } from './payload/leave-room.payload';
 
-@WebSocketGateway({
-  namespace: 'rooms',
-})
+@WebSocketGateway({})
 export class RoomsGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: SocketIoServer;
@@ -19,7 +17,16 @@ export class RoomsGateway implements OnGatewayConnection {
   constructor(private readonly roomGatewayService: RoomsGatewayService) {}
 
   handleConnection(client: Socket) {
-    console.log('connection : ', client.id);
+    console.log('@@ roomGAteway : ', client.id);
+  }
+
+  @SubscribeMessage(`${HANDLER_ROOM}/test`)
+  async test(client: Socket) {
+    try {
+      console.log('## test');
+    } catch (e) {
+      throw new WsException(e);
+    }
   }
 
   @SubscribeMessage(`${HANDLER_ROOM}/list`)
