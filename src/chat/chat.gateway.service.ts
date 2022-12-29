@@ -4,6 +4,8 @@ import { ChatMessage } from './chat-message.entity';
 import { Repository } from 'typeorm';
 import { Socket } from 'socket.io';
 import { SendRoomChatMessage } from './dto/send-room-chat-message.payload';
+import { getUserInfoFromSocket } from 'src/utils/socket.util';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class ChatGatewayService {
@@ -11,6 +13,12 @@ export class ChatGatewayService {
 
   async sendRoomChatMessage(client: Socket, payload: SendRoomChatMessage) {
     try {
-    } catch (e) {}
+      const userInfo: UserInfo = getUserInfoFromSocket(client);
+      const { message, roomId } = payload;
+
+      // const ChatMessage: ChatMessage =
+    } catch (e) {
+      throw e;
+    }
   }
 }
