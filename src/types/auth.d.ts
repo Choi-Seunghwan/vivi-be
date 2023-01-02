@@ -9,4 +9,6 @@ declare type UserInfo = {
   updateDate?: Date;
   createdDate?: Date;
   token?: string;
+  password?: string;
+  rooms?: Room[];
 };

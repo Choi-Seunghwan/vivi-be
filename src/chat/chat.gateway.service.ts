@@ -16,7 +16,8 @@ export class ChatGatewayService {
       const userInfo: UserInfo = getUserInfoFromSocket(client);
       const { message, roomId } = payload;
 
-      // const ChatMessage: ChatMessage =
+      const chatMessage: ChatMessage = this.chatMessageRepository.create({ user: userInfo, message, room: { id: roomId } });
+      await this.chatMessageRepository.save(chatMessage);
     } catch (e) {
       throw e;
     }
