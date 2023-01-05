@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { SocketJoinFailException } from 'src/common/common.exception';
+import { SocketJoinFailException, SocketLeaveFailException } from 'src/common/common.exception';
 import { MESSAGE_NEW_ROOM_MEMBER_JOINED } from 'src/constants/message.constant';
 
 export const getUserInfoFromSocket = (socket: Socket): UserInfo | undefined => {
@@ -13,6 +13,7 @@ export const joinSocketRoom = async (socket: Socket, roomId: string): Promise<vo
     // if (true) throw new AlreadyJoinedRoomException();
 
     await socket.join(roomId);
+    console.log('@@');
   } catch (e) {
     throw new SocketJoinFailException(e);
   }
@@ -20,8 +21,9 @@ export const joinSocketRoom = async (socket: Socket, roomId: string): Promise<vo
 
 export const leaveSocketRoom = async (socket: Socket, roomId: string) => {
   try {
+    await socket.leave(roomId);
   } catch (e) {
-    throw e;
+    throw new SocketLeaveFailException(e);
   }
 };
 

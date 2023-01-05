@@ -4,7 +4,7 @@ import { CreateRoomPayload } from './payload/create-room.payload';
 import { Repository } from 'typeorm';
 import { Room } from './room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getUserInfoFromSocket, joinSocketRoom, sendMessageNewRoomMemberJoined } from 'src/utils/socket.util';
+import { getUserInfoFromSocket, joinSocketRoom, leaveSocketRoom, sendMessageNewRoomMemberJoined } from 'src/utils/socket.util';
 import { CacheService } from 'src/cache/cache.service';
 import { AlreadyJoinedRoomException, RoomCreateFailException, RoomNotFoundException } from './exceptions/room.exception';
 import { roomInfoFactory, roomMemberFactory } from './room.utils';
@@ -47,15 +47,14 @@ export class RoomsGatewayService {
   async onJoinRoom(client: Socket, payload: joinRoomPayload): Promise<RoomInfo> {
     try {
       const { roomId } = payload;
-      // const userInfo: UserInfo = getUserInfoFromSocket(client);
-
       const roomInfo: RoomInfo = await this.cacheService.getRoomInfo(roomId);
       const newRoomMember: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
 
-      roomInfo.members.push(newRoomMember);
+      await joinSocketRoom(client, roomId);
 
+      roomInfo.members.set(roomId, newRoomMember);
       await this.cacheService.setRoomInfo(roomId, roomInfo);
-      await joinSocketRoom(client, roomInfo.roomId);
+
       await sendMessageNewRoomMemberJoined(client, newRoomMember, roomId);
 
       return roomInfo;
@@ -67,7 +66,9 @@ export class RoomsGatewayService {
   async onLeaveRoom(client: Socket, payload: leaveRoomPayload): Promise<any> {
     try {
       const { roomId } = payload;
-      const room: Room = await this.roomRepository.findOne({ where: { id: roomId } });
+      const roomInfo: RoomInfo = await this.cacheService.getRoomInfo(roomId);
+
+      await leaveSocketRoom(client, roomId);
     } catch (e) {
       throw e;
     }

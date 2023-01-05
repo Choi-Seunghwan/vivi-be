@@ -1,5 +1,5 @@
-import { UseFilters, UseGuards } from '@nestjs/common';
-import { OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Body, UseFilters, UseGuards, UsePipes } from '@nestjs/common';
+import { MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server as SocketIoServer, Socket } from 'socket.io';
 import { webSocketJwtAuthGuard } from 'src/auth/guards/web-socket-jwt-auth.guard';
 import { CreateRoomPayload } from './payload/create-room.payload';
@@ -9,7 +9,9 @@ import { joinRoomPayload } from './payload/join-room.payload';
 import { leaveRoomPayload } from './payload/leave-room.payload';
 import { gatewayOption } from 'src/common/gateway-option';
 import { HANDLER_ROOM } from 'src/constants/message.constant';
+import { WSValidationPipe } from 'src/pipe/WsValidationPipe';
 
+@UsePipes(new WSValidationPipe())
 @WebSocketGateway({ ...gatewayOption })
 export class RoomsGateway implements OnGatewayConnection {
   @WebSocketServer()
@@ -18,7 +20,7 @@ export class RoomsGateway implements OnGatewayConnection {
   constructor(private readonly roomGatewayService: RoomsGatewayService) {}
 
   handleConnection(client: Socket) {
-    console.log('@@ roomGAteway : ', client.id);
+    // console.log('@@ roomGAteway : ', client.id);
   }
 
   @SubscribeMessage(`${HANDLER_ROOM}/test`)
@@ -52,7 +54,7 @@ export class RoomsGateway implements OnGatewayConnection {
 
   @UseGuards(webSocketJwtAuthGuard)
   @SubscribeMessage(HANDLER_ROOM.JOIN_ROOM)
-  async joinRoomHandler(client: Socket, payload: joinRoomPayload) {
+  async joinRoomHandler(client: Socket, @MessageBody() payload: joinRoomPayload) {
     try {
       return await this.roomGatewayService.onJoinRoom(client, payload);
     } catch (e) {
