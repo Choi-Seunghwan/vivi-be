@@ -8,6 +8,12 @@ export const roomInfoFactory = (room: Room, userInfo: UserInfo): RoomInfo => {
   return roomInfo;
 };
 
+export const roomMemberFactory = (userInfo: UserInfo): RoomMember => {
+  const { id, email, nickname } = userInfo;
+  const roomMember: RoomMember = { id, email, nickname };
+  return roomMember;
+};
+
 export const isRoomHost = (user: UserInfo, room: Room): boolean => {
   return room?.host?.id === user?.id;
 };

@@ -4,7 +4,7 @@ import { WsException } from '@nestjs/websockets';
 import { gatewayOption } from 'src/common/gateway-option';
 import { SendRoomChatMessage } from './dto/send-room-chat-message.payload';
 import { ChatGatewayService } from './chat.gateway.service';
-import { HANDLER_CHAT } from 'src/constants/event-handler.constant';
+import { HANDLER_CHAT } from 'src/constants/message.constant';
 import { UseGuards } from '@nestjs/common';
 import { webSocketJwtAuthGuard } from 'src/auth/guards/web-socket-jwt-auth.guard';
 

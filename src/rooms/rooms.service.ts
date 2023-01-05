@@ -6,7 +6,6 @@ import { CloseRoomDto } from './dto/close-room.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './room.entity';
 import { isRoomHost, isRoomStatusInProgress, roomInfoFactory } from './room.utils';
-import { NAMESPACE_ROOM } from 'src/constants';
 import { CacheService } from 'src/cache/cache.service';
 import { RoomNotFoundException, RoomStatusException } from './exceptions/room.exception';
 import { ROOM_STATUS } from 'src/constants/room.constant';
@@ -32,7 +31,7 @@ export class RoomsService {
 
       const roomInfo: RoomInfo = roomInfoFactory(createdRoom, user);
 
-      await this.cacheService.set(NAMESPACE_ROOM, 'room', roomInfo);
+      await this.cacheService.setRoomInfo('room', roomInfo);
 
       return createdRoom;
     } catch (e) {

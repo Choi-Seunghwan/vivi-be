@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { UseFilters, UseGuards } from '@nestjs/common';
 import { OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server as SocketIoServer, Socket } from 'socket.io';
 import { webSocketJwtAuthGuard } from 'src/auth/guards/web-socket-jwt-auth.guard';
@@ -8,9 +8,9 @@ import { WsException } from '@nestjs/websockets';
 import { joinRoomPayload } from './payload/join-room.payload';
 import { leaveRoomPayload } from './payload/leave-room.payload';
 import { gatewayOption } from 'src/common/gateway-option';
-import { HANDLER_ROOM } from 'src/constants/event-handler.constant';
+import { HANDLER_ROOM } from 'src/constants/message.constant';
 
-@WebSocketGateway(gatewayOption)
+@WebSocketGateway({ ...gatewayOption })
 export class RoomsGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: SocketIoServer;
@@ -56,7 +56,7 @@ export class RoomsGateway implements OnGatewayConnection {
     try {
       return await this.roomGatewayService.onJoinRoom(client, payload);
     } catch (e) {
-      throw new WsException(e);
+      return new WsException(e);
     }
   }
 

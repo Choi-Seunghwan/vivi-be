@@ -8,4 +8,4 @@ export const ENV_REDIS_HOST = 'REDIS_HOST';
 export const ENV_REDIS_PORT = 'REDIS_PORT';
 
 /** REDIS */
-export const NAMESPACE_ROOM = 'ROOM';
+export const CACHE_NAMESPACE_ROOM = 'ROOM';

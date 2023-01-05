@@ -11,12 +11,11 @@ import { ENV_REDIS_HOST, ENV_REDIS_PORT } from 'src/constants';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
-        return; // test
         const config = {
           store: redisStore,
           host: configService.get<string>('REDIS_HOST'),
-          // username: configService.get<string>('REDIS_USERNAME'),
-          // password: configService.get<string>('REDIS_PASSWORD'),
+          username: configService.get<string>('REDIS_USERNAME'),
+          password: configService.get<string>('REDIS_PASSWORD'),
           port: configService.get<number>('REDIS_PORT'),
           ttl: configService.get('REDIS_TTL'),
         };

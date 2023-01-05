@@ -1,6 +1,7 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import { NAMESPACE_ROOM } from 'src/constants';
+import { CACHE_NAMESPACE_ROOM } from 'src/constants';
+import { CacheRoomInfoNotFoundException } from 'src/rooms/exceptions/room.exception';
 import { RoomInfo } from 'src/rooms/room.info';
 
 @Injectable()
@@ -30,14 +31,17 @@ export class CacheService {
   */
 
   async setRoomInfo(roomId: string, roomInfo: RoomInfo) {
-    const keyStr = `${NAMESPACE_ROOM}:${roomId}`;
+    const keyStr = `${CACHE_NAMESPACE_ROOM}:${roomId}`;
     const result = await this.cacheManager.set(keyStr, roomInfo);
     return result;
   }
 
   async getRoomInfo(roomId: string) {
-    const keyStr = `${NAMESPACE_ROOM}:${roomId}`;
+    const keyStr = `${CACHE_NAMESPACE_ROOM}:${roomId}`;
     const roomInfo: RoomInfo = await this.cacheManager.get(keyStr);
+
+    if (!roomInfo) throw new CacheRoomInfoNotFoundException();
+
     return roomInfo;
   }
 }
