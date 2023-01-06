@@ -1,7 +1,7 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import { CacheRoomInfoNotFoundException } from 'src/common/common.exception';
 import { CACHE_NAMESPACE_ROOM } from 'src/constants';
-import { CacheRoomInfoNotFoundException } from 'src/rooms/exceptions/room.exception';
 import { RoomInfo } from 'src/rooms/room.info';
 
 @Injectable()
@@ -43,5 +43,13 @@ export class CacheService {
     if (!roomInfo) throw new CacheRoomInfoNotFoundException();
 
     return roomInfo;
+  }
+
+  async deleteRoomInfo(roomId: string) {
+    const keyStr = `${CACHE_NAMESPACE_ROOM}:${roomId}`;
+
+    await this.cacheManager.del(keyStr);
+
+    return true;
   }
 }

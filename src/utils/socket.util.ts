@@ -1,6 +1,12 @@
 import { Server as SocketIoServer, Socket } from 'socket.io';
-import { SocketJoinFailException, SocketLeaveFailException } from 'src/common/common.exception';
-import { MESSAGE_NEW_ROOM_MEMBER_JOINED, MESSAGE_ROOM_MEMBER_LEAVED } from 'src/constants/message.constant';
+import {
+  SocketAlreadyInRoomException,
+  SocketJoinFailException,
+  SocketLeaveFailException,
+  SocketLeaveHostFailException,
+  SocketNotInRoomException,
+} from 'src/common/common.exception';
+import { MESSAGE_NEW_ROOM_MEMBER_JOINED, MESSAGE_ROOM_HOST_LEAVED, MESSAGE_ROOM_MEMBER_LEAVED } from 'src/constants/message.constant';
 
 export const getUserInfoFromSocket = (socket: Socket): UserInfo | undefined => {
   const userInfo: UserInfo = socket?.handshake?.['user'];
@@ -9,21 +15,32 @@ export const getUserInfoFromSocket = (socket: Socket): UserInfo | undefined => {
 
 export const joinSocketRoom = async (socket: Socket, roomId: string): Promise<void> => {
   try {
-    // socket.rooms;
-    // if (true) throw new AlreadyJoinedRoomException();
+    if (socket.rooms.has(roomId)) throw new SocketAlreadyInRoomException();
 
     await socket.join(roomId);
-    console.log('@@');
   } catch (e) {
+    if (e instanceof SocketAlreadyInRoomException) throw e;
     throw new SocketJoinFailException(e);
   }
 };
 
 export const leaveSocketRoom = async (socket: Socket, roomId: string) => {
   try {
+    if (socket.rooms.has(roomId)) throw new SocketNotInRoomException();
+
     await socket.leave(roomId);
   } catch (e) {
+    if (e instanceof SocketNotInRoomException) throw e;
     throw new SocketLeaveFailException(e);
+  }
+};
+
+export const hostLeaveSocketRoom = async (server: SocketIoServer, roomId) => {
+  try {
+    server.in(roomId).emit(MESSAGE_ROOM_HOST_LEAVED, { roomId });
+    server.in(roomId).socketsLeave(roomId);
+  } catch (e) {
+    throw new SocketLeaveHostFailException(e);
   }
 };
 

@@ -5,8 +5,8 @@ import { RoomsService } from './rooms.service';
 import { Room } from './room.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CloseRoomDto } from './dto/close-room.dto';
-import { RoomNotFoundException, RoomStatusException } from './exceptions/room.exception';
 import { startRoomDto } from './dto/start-room-dto';
+import { RoomNotFoundException, RoomStatusException } from 'src/common/room.exception';
 
 @Controller('room')
 export class RoomsController {

@@ -1,4 +1,4 @@
-import { ArgumentMetadata, Injectable, ValidationPipe } from '@nestjs/common';
+import { Injectable, ValidationPipe } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 
 @Injectable()
@@ -12,8 +12,5 @@ export class WSValidationPipe extends ValidationPipe {
 
       return new WsException(errors);
     };
-  }
-  transform(value: any, metadata: ArgumentMetadata): Promise<any> {
-    return;
   }
 }

@@ -7,10 +7,10 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './room.entity';
 import { isRoomHost, isRoomStatusInProgress, roomInfoFactory } from './room.utils';
 import { CacheService } from 'src/cache/cache.service';
-import { RoomNotFoundException, RoomStatusException } from './exceptions/room.exception';
 import { ROOM_STATUS } from 'src/constants/room.constant';
 import { startRoomDto } from './dto/start-room-dto';
 import { RoomInfo } from './room.info';
+import { RoomNotFoundException, RoomStatusException } from 'src/common/room.exception';
 
 @Injectable()
 export class RoomsService {

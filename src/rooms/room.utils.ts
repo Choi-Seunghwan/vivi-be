@@ -3,8 +3,8 @@ import { User } from 'src/users/user.entity';
 import { Room } from './room.entity';
 import { RoomInfo } from './room.info';
 
-export const roomInfoFactory = (room: Room, userInfo: UserInfo): RoomInfo => {
-  const roomInfo: RoomInfo = new RoomInfo({ roomId: room.id, title: room.title, host: userInfo });
+export const roomInfoFactory = (room: Room, host: RoomMember): RoomInfo => {
+  const roomInfo: RoomInfo = new RoomInfo({ roomId: room.id, title: room.title, host });
   return roomInfo;
 };
 

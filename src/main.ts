@@ -12,6 +12,7 @@ async function bootstrap() {
     new ValidationPipe({
       forbidNonWhitelisted: true,
       transform: true,
+      whitelist: true,
     })
   );
   app.useWebSocketAdapter(new SocketIoAdapter(app));

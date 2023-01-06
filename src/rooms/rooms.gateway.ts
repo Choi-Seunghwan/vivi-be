@@ -1,5 +1,12 @@
-import { Body, UseFilters, UseGuards, UsePipes } from '@nestjs/common';
-import { MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server as SocketIoServer, Socket } from 'socket.io';
 import { webSocketJwtAuthGuard } from 'src/auth/guards/web-socket-jwt-auth.guard';
 import { CreateRoomPayload } from './payload/create-room.payload';
@@ -10,10 +17,12 @@ import { leaveRoomPayload } from './payload/leave-room.payload';
 import { gatewayOption } from 'src/common/gateway-option';
 import { HANDLER_ROOM } from 'src/constants/message.constant';
 import { WSValidationPipe } from 'src/pipe/WsValidationPipe';
+import { getUserInfoFromSocket } from 'src/utils/socket.util';
 
-@UsePipes(new WSValidationPipe())
+// @UseFilters(WsExceptionFilter)
 @WebSocketGateway({ ...gatewayOption })
-export class RoomsGateway implements OnGatewayConnection {
+@UsePipes(new WSValidationPipe())
+export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: SocketIoServer;
 
@@ -23,12 +32,20 @@ export class RoomsGateway implements OnGatewayConnection {
     // console.log('@@ roomGAteway : ', client.id);
   }
 
-  @SubscribeMessage(`${HANDLER_ROOM}/test`)
-  async test(client: Socket) {
+  handleDisconnect(client: Socket) {
+    //
+    const userInfo: UserInfo = getUserInfoFromSocket(client);
+    const rooms = client.rooms;
+  }
+
+  @SubscribeMessage('ROOM/test')
+  async test(client: Socket, @MessageBody() payload: CreateRoomPayload) {
     try {
-      console.log('## test');
+      console.log('## test', payload);
+      // return 'test';
+      throw new Error('ee');
     } catch (e) {
-      throw new WsException(e);
+      return new WsException(e);
     }
   }
 
@@ -38,7 +55,7 @@ export class RoomsGateway implements OnGatewayConnection {
       const roomList = await this.roomGatewayService.getRoomList(client);
       return roomList;
     } catch (e) {
-      throw new WsException(e);
+      return new WsException(e);
     }
   }
 
@@ -48,15 +65,16 @@ export class RoomsGateway implements OnGatewayConnection {
     try {
       return await this.roomGatewayService.onCreateRoom(client, payload);
     } catch (e) {
-      throw new WsException(e);
+      return new WsException(e);
     }
   }
 
   @UseGuards(webSocketJwtAuthGuard)
   @SubscribeMessage(HANDLER_ROOM.JOIN_ROOM)
-  async joinRoomHandler(client: Socket, @MessageBody() payload: joinRoomPayload) {
+  async joinRoomHandler(client: Socket, payload: joinRoomPayload) {
     try {
-      return await this.roomGatewayService.onJoinRoom(client, payload);
+      const result = await this.roomGatewayService.onJoinRoom(client, payload);
+      return result;
     } catch (e) {
       return new WsException(e);
     }
@@ -66,9 +84,9 @@ export class RoomsGateway implements OnGatewayConnection {
   @SubscribeMessage(HANDLER_ROOM.LEAVE_ROOM)
   async leaveRoomHandler(client: Socket, payload: leaveRoomPayload) {
     try {
-      return await this.roomGatewayService.onLeaveRoom(client, payload);
+      return await this.roomGatewayService.onLeaveRoom(this.server, client, payload);
     } catch (e) {
-      throw new WsException(e);
+      return new WsException(e);
     }
   }
 }

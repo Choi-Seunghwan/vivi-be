@@ -6,17 +6,18 @@ import { Room } from './room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   getUserInfoFromSocket,
+  hostLeaveSocketRoom,
   joinSocketRoom,
   leaveSocketRoom,
   sendMessageNewRoomMemberJoined,
   sendMessageRoomMemberLeaved,
 } from 'src/utils/socket.util';
 import { CacheService } from 'src/cache/cache.service';
-import { AlreadyJoinedRoomException, RoomCreateFailException, RoomNotFoundException } from './exceptions/room.exception';
 import { roomInfoFactory, roomMemberFactory } from './room.utils';
 import { joinRoomPayload } from './payload/join-room.payload';
 import { leaveRoomPayload } from './payload/leave-room.payload';
 import { RoomInfo } from './room.info';
+import { AlreadyJoinedRoomException, RoomCreateFailException } from 'src/common/room.exception';
 
 @Injectable()
 export class RoomsGatewayService {
@@ -31,13 +32,14 @@ export class RoomsGatewayService {
     try {
       const { title } = payload;
       const userInfo: UserInfo = getUserInfoFromSocket(client);
+      const hostRoomMember: RoomMember = roomMemberFactory(userInfo);
 
       const createdRoom: Room = this.roomRepository.create({ host: userInfo, title });
       await this.roomRepository.save(createdRoom);
 
       if (!createdRoom) throw new RoomCreateFailException();
 
-      const roomInfo: RoomInfo = roomInfoFactory(createdRoom, userInfo);
+      const roomInfo: RoomInfo = roomInfoFactory(createdRoom, hostRoomMember);
 
       await this.cacheService.setRoomInfo(createdRoom.id, roomInfo);
 
@@ -55,9 +57,11 @@ export class RoomsGatewayService {
       const roomInfo: RoomInfo = await this.cacheService.getRoomInfo(roomId);
       const newRoomMember: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
 
+      if (roomInfo.members[newRoomMember.id]) throw new AlreadyJoinedRoomException();
+
       await joinSocketRoom(client, roomId);
 
-      roomInfo.members.set(roomId, newRoomMember);
+      roomInfo.members[newRoomMember.id] = newRoomMember;
       await this.cacheService.setRoomInfo(roomId, roomInfo);
 
       await sendMessageNewRoomMemberJoined(client, newRoomMember, roomId);
@@ -73,13 +77,20 @@ export class RoomsGatewayService {
       const { roomId } = payload;
       const roomInfo: RoomInfo = await this.cacheService.getRoomInfo(roomId);
       const roomMember: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
+      const isHostLeave = roomMember.id === roomInfo?.host?.id;
 
-      await leaveSocketRoom(client, roomId);
+      delete roomInfo.members[roomMember.id];
 
-      roomInfo.members.delete(roomMember.id);
-      await this.cacheService.setRoomInfo(roomId, roomInfo);
+      if (isHostLeave) {
+        await hostLeaveSocketRoom(server, roomId);
+        await this.cacheService.deleteRoomInfo(roomId);
+      } else {
+        await leaveSocketRoom(client, roomId);
 
-      await sendMessageRoomMemberLeaved(server, roomMember, roomId);
+        await this.cacheService.setRoomInfo(roomId, roomInfo);
+
+        await sendMessageRoomMemberLeaved(server, roomMember, roomId);
+      }
 
       return roomInfo;
     } catch (e) {
