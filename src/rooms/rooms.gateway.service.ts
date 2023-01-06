@@ -1,16 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { Socket } from 'socket.io';
+import { Server as SocketIoServer, Socket } from 'socket.io';
 import { CreateRoomPayload } from './payload/create-room.payload';
 import { Repository } from 'typeorm';
 import { Room } from './room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getUserInfoFromSocket, joinSocketRoom, leaveSocketRoom, sendMessageNewRoomMemberJoined } from 'src/utils/socket.util';
+import {
+  getUserInfoFromSocket,
+  joinSocketRoom,
+  leaveSocketRoom,
+  sendMessageNewRoomMemberJoined,
+  sendMessageRoomMemberLeaved,
+} from 'src/utils/socket.util';
 import { CacheService } from 'src/cache/cache.service';
 import { AlreadyJoinedRoomException, RoomCreateFailException, RoomNotFoundException } from './exceptions/room.exception';
 import { roomInfoFactory, roomMemberFactory } from './room.utils';
 import { joinRoomPayload } from './payload/join-room.payload';
 import { leaveRoomPayload } from './payload/leave-room.payload';
-import { SocketJoinFailException } from 'src/common/common.exception';
 import { RoomInfo } from './room.info';
 
 @Injectable()
@@ -63,12 +68,20 @@ export class RoomsGatewayService {
     }
   }
 
-  async onLeaveRoom(client: Socket, payload: leaveRoomPayload): Promise<any> {
+  async onLeaveRoom(server: SocketIoServer, client: Socket, payload: leaveRoomPayload): Promise<any> {
     try {
       const { roomId } = payload;
       const roomInfo: RoomInfo = await this.cacheService.getRoomInfo(roomId);
+      const roomMember: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
 
       await leaveSocketRoom(client, roomId);
+
+      roomInfo.members.delete(roomMember.id);
+      await this.cacheService.setRoomInfo(roomId, roomInfo);
+
+      await sendMessageRoomMemberLeaved(server, roomMember, roomId);
+
+      return roomInfo;
     } catch (e) {
       throw e;
     }
