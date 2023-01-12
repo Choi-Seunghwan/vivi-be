@@ -28,14 +28,10 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(private readonly roomGatewayService: RoomsGatewayService) {}
 
-  handleConnection(client: Socket) {
-    // console.log('@@ roomGAteway : ', client.id);
-  }
+  handleConnection(client: Socket) {}
 
-  handleDisconnect(client: Socket) {
-    //
-    const userInfo: UserInfo = getUserInfoFromSocket(client);
-    const rooms = client.rooms;
+  async handleDisconnect(client: Socket) {
+    await this.roomGatewayService.onDisconnection(client);
   }
 
   @SubscribeMessage('ROOM/test')

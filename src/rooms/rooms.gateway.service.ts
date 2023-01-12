@@ -23,6 +23,13 @@ import { AlreadyJoinedRoomException, RoomCreateFailException } from 'src/common/
 export class RoomsGatewayService {
   constructor(@InjectRepository(Room) private roomRepository: Repository<Room>, private cacheService: CacheService) {}
 
+  async onDisconnection(client: Socket) {
+    const userInfo: UserInfo = getUserInfoFromSocket(client);
+    const rooms = client.rooms;
+    console.log('@@', rooms);
+    // await leaveSocketRoom(client, roomId);
+  }
+
   async getRoomList(client: Socket) {
     const roomList = await this.roomRepository.find();
     return roomList;
@@ -57,11 +64,8 @@ export class RoomsGatewayService {
       const roomInfo: RoomInfo = await this.cacheService.getRoomInfo(roomId);
       const newRoomMember: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
 
-      if (roomInfo.members[newRoomMember.id]) throw new AlreadyJoinedRoomException();
-
       await joinSocketRoom(client, roomId);
 
-      roomInfo.members[newRoomMember.id] = newRoomMember;
       await this.cacheService.setRoomInfo(roomId, roomInfo);
 
       await sendMessageNewRoomMemberJoined(client, newRoomMember, roomId);
@@ -78,8 +82,6 @@ export class RoomsGatewayService {
       const roomInfo: RoomInfo = await this.cacheService.getRoomInfo(roomId);
       const roomMember: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
       const isHostLeave = roomMember.id === roomInfo?.host?.id;
-
-      delete roomInfo.members[roomMember.id];
 
       if (isHostLeave) {
         await hostLeaveSocketRoom(server, roomId);
