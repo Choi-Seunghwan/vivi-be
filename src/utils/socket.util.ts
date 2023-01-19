@@ -59,3 +59,11 @@ export const sendMessageRoomMemberLeaved = async (server: SocketIoServer, roomMe
     throw e;
   }
 };
+
+export const sendMessageRoomHostLeaved = async (server: SocketIoServer, roomId: string) => {
+  try {
+    server.in(roomId).emit(MESSAGE_ROOM_MEMBER_LEAVED, { roomId });
+  } catch (e) {
+    throw e;
+  }
+};

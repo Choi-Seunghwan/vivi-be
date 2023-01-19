@@ -10,6 +10,7 @@ import {
   joinSocketRoom,
   leaveSocketRoom,
   sendMessageNewRoomMemberJoined,
+  sendMessageRoomHostLeaved,
   sendMessageRoomMemberLeaved,
 } from 'src/utils/socket.util';
 import { CacheService } from 'src/cache/cache.service';
@@ -18,16 +19,18 @@ import { joinRoomPayload } from './payload/join-room.payload';
 import { leaveRoomPayload } from './payload/leave-room.payload';
 import { RoomInfo } from './room.info';
 import { AlreadyJoinedRoomException, RoomCreateFailException } from 'src/common/room.exception';
+import type { Room as SocketRoom } from 'socket.io-adapter';
 
 @Injectable()
 export class RoomsGatewayService {
   constructor(@InjectRepository(Room) private roomRepository: Repository<Room>, private cacheService: CacheService) {}
 
-  async onDisconnection(client: Socket) {
+  async onDisconnection(server: SocketIoServer, client: Socket) {
     const userInfo: UserInfo = getUserInfoFromSocket(client);
-    const rooms = client.rooms;
-    console.log('@@', rooms);
-    // await leaveSocketRoom(client, roomId);
+    const rooms: Set<SocketRoom> = client.rooms;
+    rooms.forEach((roomId) => {
+      sendMessageRoomHostLeaved(server, roomId);
+    });
   }
 
   async getRoomList(client: Socket) {
@@ -65,9 +68,7 @@ export class RoomsGatewayService {
       const newRoomMember: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
 
       await joinSocketRoom(client, roomId);
-
       await this.cacheService.setRoomInfo(roomId, roomInfo);
-
       await sendMessageNewRoomMemberJoined(client, newRoomMember, roomId);
 
       return roomInfo;
