@@ -7,6 +7,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SignInDto } from './dto/sign-in-dto';
+import { userInfoFactory } from 'src/users/user.utils';
 
 @Injectable()
 export class AuthService {
@@ -47,12 +48,14 @@ export class AuthService {
     return null;
   }
 
-  async signUp(dto: SignUpDto): Promise<User> {
+  async signUp(dto: SignUpDto): Promise<UserInfo> {
     const password = dto?.password;
     const hashedPassword = await this.hashPassword(password);
     const createdUser: User = await this.userRepository.save({ ...dto, password: hashedPassword });
+    const token = await this.jwtService.signAsync({ email: createdUser });
+    const userInfo = userInfoFactory(createdUser, token);
 
-    return createdUser;
+    return userInfo;
   }
 
   async signIn(dto: SignInDto): Promise<string> {

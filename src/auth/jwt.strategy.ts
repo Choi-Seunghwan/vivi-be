@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { User } from 'src/users/user.entity';
+import { userInfoFactory } from 'src/users/user.utils';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -12,16 +13,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.get('JWT_PRIVATE_KEY'),
+      passReqToCallback: true,
     });
   }
 
-  async validate(payload: JwtPayload) {
+  async validate(req, payload: JwtPayload): Promise<UserInfo | boolean> {
+    const rawToken = req.headers['authorization'].split(' ')[1];
     const { email } = payload;
     const user: User = await this.authService.validateUser(email);
 
     if (!user) return false;
 
-    const { password, ...result } = user;
-    return result;
+    const userInfo = userInfoFactory(user, rawToken);
+    return userInfo;
   }
 }
