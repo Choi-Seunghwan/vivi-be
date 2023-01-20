@@ -31,7 +31,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(client: Socket) {}
 
   async handleDisconnect(client: Socket) {
-    await this.roomGatewayService.onDisconnection(client);
+    await this.roomGatewayService.onDisconnection(this.server, client);
   }
 
   @SubscribeMessage('ROOM/test')

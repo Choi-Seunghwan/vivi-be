@@ -12,7 +12,7 @@ import { RoomNotFoundException, RoomStatusException } from 'src/common/room.exce
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
 
-  @Get()
+  @Get('/')
   async findAll(): Promise<Room[]> {
     const roomList: Room[] = await this.roomsService.findAll();
     return roomList;
