@@ -17,7 +17,6 @@ import { leaveRoomPayload } from './payload/leave-room.payload';
 import { gatewayOption } from 'src/common/gateway-option';
 import { HANDLER_ROOM } from 'src/constants/message.constant';
 import { WSValidationPipe } from 'src/pipe/WsValidationPipe';
-import { getUserInfoFromSocket } from 'src/utils/socket.util';
 
 // @UseFilters(WsExceptionFilter)
 @WebSocketGateway({ ...gatewayOption })
@@ -59,7 +58,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage(HANDLER_ROOM.CREATE_ROOM)
   async createRoomHandler(client: Socket, payload: CreateRoomPayload) {
     try {
-      return await this.roomGatewayService.onCreateRoom(client, payload);
+      return await this.roomGatewayService.onCreateRoom(this.server, client, payload);
     } catch (e) {
       return new WsException(e);
     }
@@ -69,7 +68,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage(HANDLER_ROOM.JOIN_ROOM)
   async joinRoomHandler(client: Socket, payload: joinRoomPayload) {
     try {
-      const result = await this.roomGatewayService.onJoinRoom(client, payload);
+      const result = await this.roomGatewayService.onJoinRoom(this.server, client, payload);
       return result;
     } catch (e) {
       return new WsException(e);

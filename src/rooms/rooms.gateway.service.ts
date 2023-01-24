@@ -18,8 +18,9 @@ import { roomInfoFactory, roomMemberFactory } from './room.utils';
 import { joinRoomPayload } from './payload/join-room.payload';
 import { leaveRoomPayload } from './payload/leave-room.payload';
 import { RoomInfo } from './room.info';
-import { AlreadyJoinedRoomException, RoomCreateFailException } from 'src/common/room.exception';
+import { AlreadyJoinedRoomException, RoomCreateFailException, RoomStatusException } from 'src/common/room.exception';
 import type { Room as SocketRoom } from 'socket.io-adapter';
+import { ROOM_STATUS } from 'src/constants/room.constant';
 
 @Injectable()
 export class RoomsGatewayService {
@@ -34,42 +35,41 @@ export class RoomsGatewayService {
   }
 
   async getRoomList(client: Socket) {
-    const roomList = await this.roomRepository.find();
-    return roomList;
+    const rooms = await this.roomRepository.find({});
+    return rooms;
   }
 
-  async onCreateRoom(client: Socket, payload: CreateRoomPayload): Promise<Room> {
+  async onCreateRoom(server: SocketIoServer, client: Socket, payload: CreateRoomPayload): Promise<RoomInfo> {
     try {
       const { title } = payload;
       const userInfo: UserInfo = getUserInfoFromSocket(client);
-      const hostRoomMember: RoomMember = roomMemberFactory(userInfo);
 
-      const createdRoom: Room = this.roomRepository.create({ host: userInfo, title });
+      const createdRoom: Room = this.roomRepository.create({ host: userInfo, title, status: ROOM_STATUS.IN_PROGRESS });
       await this.roomRepository.save(createdRoom);
 
       if (!createdRoom) throw new RoomCreateFailException();
 
-      const roomInfo: RoomInfo = roomInfoFactory(createdRoom, hostRoomMember);
-
-      await this.cacheService.setRoomInfo(createdRoom.id, roomInfo);
-
       await joinSocketRoom(client, createdRoom.id);
+      const roomInfo = await roomInfoFactory(server, createdRoom, userInfo);
 
-      return createdRoom;
+      return roomInfo;
     } catch (e) {
       throw e;
     }
   }
 
-  async onJoinRoom(client: Socket, payload: joinRoomPayload): Promise<RoomInfo> {
+  async onJoinRoom(server: SocketIoServer, client: Socket, payload: joinRoomPayload): Promise<RoomInfo> {
     try {
       const { roomId } = payload;
-      const roomInfo: RoomInfo = await this.cacheService.getRoomInfo(roomId);
-      const newRoomMember: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
+      const member: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
+      const room = await this.roomRepository.findOne({ where: { id: roomId } });
+
+      if (room.status !== ROOM_STATUS.IN_PROGRESS) throw new RoomStatusException();
 
       await joinSocketRoom(client, roomId);
-      await this.cacheService.setRoomInfo(roomId, roomInfo);
-      await sendMessageNewRoomMemberJoined(client, newRoomMember, roomId);
+      await sendMessageNewRoomMemberJoined(client, member, roomId);
+
+      const roomInfo = await roomInfoFactory(server, room, room.host);
 
       return roomInfo;
     } catch (e) {
@@ -80,22 +80,20 @@ export class RoomsGatewayService {
   async onLeaveRoom(server: SocketIoServer, client: Socket, payload: leaveRoomPayload): Promise<any> {
     try {
       const { roomId } = payload;
-      const roomInfo: RoomInfo = await this.cacheService.getRoomInfo(roomId);
       const roomMember: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
-      const isHostLeave = roomMember.id === roomInfo?.host?.id;
+      const room = await this.roomRepository.findOne({ where: { id: roomId } });
+
+      const isHostLeave = roomMember.id === room?.host?.id;
 
       if (isHostLeave) {
         await hostLeaveSocketRoom(server, roomId);
-        await this.cacheService.deleteRoomInfo(roomId);
       } else {
         await leaveSocketRoom(client, roomId);
-
-        await this.cacheService.setRoomInfo(roomId, roomInfo);
 
         await sendMessageRoomMemberLeaved(server, roomMember, roomId);
       }
 
-      return roomInfo;
+      return true;
     } catch (e) {
       throw e;
     }

@@ -6,23 +6,28 @@ import { Room } from './room.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CloseRoomDto } from './dto/close-room.dto';
 import { startRoomDto } from './dto/start-room-dto';
+import { RoomInfo } from './room.info';
 import { RoomNotFoundException, RoomStatusException } from 'src/common/room.exception';
+import { RoomsGateway } from './rooms.gateway';
 
 @Controller('room')
 export class RoomsController {
-  constructor(private readonly roomsService: RoomsService) {}
+  constructor(private readonly roomsService: RoomsService, private readonly roomsGateway: RoomsGateway) {}
 
   @Get('/')
-  async findAll(): Promise<Room[]> {
-    const roomList: Room[] = await this.roomsService.findAll();
-    return roomList;
+  async getRooms(): Promise<RoomInfo[]> {
+    const server = this.roomsGateway.server;
+    const roomInfoList: RoomInfo[] = await this.roomsService.getRoomList(server);
+    return roomInfoList;
   }
 
+  /*
   @UseGuards(JwtAuthGuard)
   @Post('/create')
   async createRoom(@Request() req, @Body() createRoomDto: CreateRoomDto) {
+    const server = this.roomsGateway.server;
     const user = req.user;
-    const craetedRoom = await this.roomsService.create(user, createRoomDto);
+    const craetedRoom = await this.roomsService.create(server, user, createRoomDto);
 
     return craetedRoom;
   }
@@ -56,4 +61,5 @@ export class RoomsController {
       throw new InternalServerErrorException();
     }
   }
+  */
 }

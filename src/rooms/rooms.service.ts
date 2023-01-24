@@ -20,18 +20,20 @@ export class RoomsService {
     private cacheService: CacheService
   ) {}
 
-  findAll(): Promise<Room[]> {
-    return this.roomRepository.find();
+  async getRoomList(server): Promise<RoomInfo[]> {
+    const rooms: Room[] = await this.roomRepository.find({ where: { status: ROOM_STATUS.IN_PROGRESS } });
+    const roomInfos = Promise.all(rooms.map(async (r) => await roomInfoFactory(server, r, r.host)));
+    return roomInfos;
   }
 
-  async create(user: User, createRoomDto: CreateRoomDto): Promise<Room> {
+  /*
+  async create(server, user: User, createRoomDto: CreateRoomDto): Promise<Room> {
     try {
-      const createdRoom: Room = this.roomRepository.create({ host: user, title: createRoomDto.title });
+      const createdRoom: Room = this.roomRepository.create({ host: user, title: createRoomDto.title, status: ROOM_STATUS.IN_PROGRESS });
       await this.roomRepository.save(createdRoom);
 
-      const roomInfo: RoomInfo = roomInfoFactory(createdRoom, user);
-
-      await this.cacheService.setRoomInfo('room', roomInfo);
+      const roomInfo: RoomInfo = await roomInfoFactory(server, createdRoom, user);
+      // await this.cacheService.setRoomInfo('room', roomInfo);
 
       return createdRoom;
     } catch (e) {
@@ -78,4 +80,5 @@ export class RoomsService {
       throw e;
     }
   }
+  */
 }

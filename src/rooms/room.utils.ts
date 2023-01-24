@@ -2,9 +2,14 @@ import { ROOM_STATUS } from 'src/constants/room.constant';
 import { User } from 'src/users/user.entity';
 import { Room } from './room.entity';
 import { RoomInfo } from './room.info';
+import { Server } from 'socket.io';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
-export const roomInfoFactory = (room: Room, host: RoomMember): RoomInfo => {
+export const roomInfoFactory = async (server: Server, room: Room, host: RoomMember): Promise<RoomInfo> => {
   const roomInfo: RoomInfo = new RoomInfo({ roomId: room.id, title: room.title, host });
+  const socketMembers = await server.in(room.id).fetchSockets();
+  // socket에 user 정보 붙여야 함
+
   return roomInfo;
 };
 
