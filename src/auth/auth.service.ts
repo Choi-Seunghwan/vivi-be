@@ -30,14 +30,14 @@ export class AuthService {
     return hashedPassword;
   }
 
-  async validateToken(token: string): Promise<UserInfo> {
+  async validateToken(token: string): Promise<{ userInfo: UserInfo; token: string }> {
     try {
       const result = await this.jwtService.verifyAsync(token);
       const tokenPayload: TokenPayload = { id: result.id, email: result.email, nickname: result.nickname };
       const user: User = await this.validateUser(tokenPayload.email);
-      const userInfo: UserInfo = userInfoFactory(user, token);
+      const userInfo: UserInfo = userInfoFactory(user);
 
-      return userInfo;
+      return { userInfo, token };
     } catch (e) {
       throw new ToeknVerifyFailed();
     }
@@ -63,14 +63,14 @@ export class AuthService {
     return null;
   }
 
-  async signUp(dto: SignUpDto): Promise<UserInfo> {
+  async signUp(dto: SignUpDto): Promise<{ userInfo: UserInfo; token: string }> {
     const password = dto?.password;
     const hashedPassword = await this.hashPassword(password);
     const createdUser: User = await this.userRepository.save({ ...dto, password: hashedPassword });
     const token = await this.jwtService.signAsync({ email: createdUser });
-    const userInfo = userInfoFactory(createdUser, token);
+    const userInfo = userInfoFactory(createdUser);
 
-    return userInfo;
+    return { userInfo, token };
   }
 
   async signIn(dto: SignInDto): Promise<string> {

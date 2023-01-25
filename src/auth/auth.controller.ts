@@ -14,19 +14,19 @@ export class AuthController {
 
   @Post('/sign-up')
   @HttpCode(201)
-  async signUp(@Body() dto: SignUpDto): Promise<UserInfo> {
-    const userInfo = await this.authService.signUp(dto);
-    return userInfo;
+  async signUp(@Body() dto: SignUpDto): Promise<{ user: UserInfo; token: string }> {
+    const { userInfo, token } = await this.authService.signUp(dto);
+    return { user: userInfo, token };
   }
 
   @Post('/sign-in')
   @UseGuards(LocalAuthGuard)
   @HttpCode(200)
-  async signIn(@Request() req, @Body() dto: SignInDto): Promise<UserInfo> {
+  async signIn(@Request() req, @Body() dto: SignInDto): Promise<{ user: UserInfo; token: string }> {
     const user: User = req.user;
     const token = await this.authService.signIn(dto);
-    const userInfo: UserInfo = userInfoFactory(user, token);
-    return userInfo;
+    const userInfo = userInfoFactory(user);
+    return { user: userInfo, token };
   }
 
   @Post('/token-sign-in')

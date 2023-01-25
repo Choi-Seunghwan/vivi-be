@@ -18,7 +18,6 @@ import { gatewayOption } from 'src/common/gateway-option';
 import { HANDLER_ROOM } from 'src/constants/message.constant';
 import { WSValidationPipe } from 'src/pipe/WsValidationPipe';
 import { AuthService } from 'src/auth/auth.service';
-import { ExtractJwt } from 'passport-jwt';
 import { ToeknVerifyFailed } from 'src/common/common.exception';
 
 // @UseFilters(WsExceptionFilter)
@@ -37,7 +36,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         if (!rawToken) return false;
 
-        const userInfo: UserInfo = await this.authService.validateToken(rawToken);
+        const { userInfo, token } = await this.authService.validateToken(rawToken);
         client.handshake['user'] = userInfo;
       }
     } catch (e) {
