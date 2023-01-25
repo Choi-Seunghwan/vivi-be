@@ -1,5 +1,7 @@
-declare type JwtPayload = {
+declare type TokenPayload = {
+  id: string;
   email: string;
+  nickname: string;
 };
 
 declare type UserInfo = {

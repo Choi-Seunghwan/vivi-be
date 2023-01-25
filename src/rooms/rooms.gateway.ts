@@ -17,6 +17,9 @@ import { leaveRoomPayload } from './payload/leave-room.payload';
 import { gatewayOption } from 'src/common/gateway-option';
 import { HANDLER_ROOM } from 'src/constants/message.constant';
 import { WSValidationPipe } from 'src/pipe/WsValidationPipe';
+import { AuthService } from 'src/auth/auth.service';
+import { ExtractJwt } from 'passport-jwt';
+import { ToeknVerifyFailed } from 'src/common/common.exception';
 
 // @UseFilters(WsExceptionFilter)
 @WebSocketGateway({ ...gatewayOption })
@@ -25,25 +28,40 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: SocketIoServer;
 
-  constructor(private readonly roomGatewayService: RoomsGatewayService) {}
+  constructor(private readonly roomGatewayService: RoomsGatewayService, private readonly authService: AuthService) {}
 
-  handleConnection(client: Socket) {}
+  async handleConnection(client: Socket) {
+    try {
+      if (client?.handshake?.headers?.authorization) {
+        const rawToken = client?.handshake?.headers?.authorization?.split(' ')?.[1];
+
+        if (!rawToken) return false;
+
+        const userInfo: UserInfo = await this.authService.validateToken(rawToken);
+        client.handshake['user'] = userInfo;
+      }
+    } catch (e) {
+      if (e instanceof ToeknVerifyFailed) return false;
+      else throw e;
+    }
+  }
 
   async handleDisconnect(client: Socket) {
     await this.roomGatewayService.onDisconnection(this.server, client);
   }
 
   @SubscribeMessage('ROOM/test')
-  async test(client: Socket, @MessageBody() payload: CreateRoomPayload) {
+  async test(client: Socket) {
     try {
-      console.log('## test', payload);
+      console.log('## test');
       // return 'test';
-      throw new Error('ee');
+      // throw new Error('ee');
     } catch (e) {
       return new WsException(e);
     }
   }
 
+  /*
   @SubscribeMessage(HANDLER_ROOM.LIST)
   async getRoomList(client: Socket) {
     try {
@@ -53,6 +71,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return new WsException(e);
     }
   }
+  */
 
   @UseGuards(webSocketJwtAuthGuard)
   @SubscribeMessage(HANDLER_ROOM.CREATE_ROOM)

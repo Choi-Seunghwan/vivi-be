@@ -17,7 +17,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('/info')
   async findOne(@Request() req): Promise<User | void> {
-    const payload: JwtPayload = req?.user;
+    const payload: TokenPayload = req?.user;
     const { email } = payload;
     const userInfo = await this.userService.getUser(email);
 

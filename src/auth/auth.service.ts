@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, UseGuards } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/user.entity';
@@ -8,6 +8,8 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SignInDto } from './dto/sign-in-dto';
 import { userInfoFactory } from 'src/users/user.utils';
+import { webSocketJwtAuthGuard } from './guards/web-socket-jwt-auth.guard';
+import { ToeknVerifyFailed } from 'src/common/common.exception';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +28,19 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     return hashedPassword;
+  }
+
+  async validateToken(token: string): Promise<UserInfo> {
+    try {
+      const result = await this.jwtService.verifyAsync(token);
+      const tokenPayload: TokenPayload = { id: result.id, email: result.email, nickname: result.nickname };
+      const user: User = await this.validateUser(tokenPayload.email);
+      const userInfo: UserInfo = userInfoFactory(user, token);
+
+      return userInfo;
+    } catch (e) {
+      throw new ToeknVerifyFailed();
+    }
   }
 
   async validateUser(email: string): Promise<User> {

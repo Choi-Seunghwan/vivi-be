@@ -8,7 +8,8 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 export const roomInfoFactory = async (server: Server, room: Room, host: RoomMember): Promise<RoomInfo> => {
   const roomInfo: RoomInfo = new RoomInfo({ roomId: room.id, title: room.title, host });
   const socketMembers = await server.in(room.id).fetchSockets();
-  // socket에 user 정보 붙여야 함
+
+  roomInfo.members = socketMembers.map((sMember) => sMember.handshake?.['user']);
 
   return roomInfo;
 };

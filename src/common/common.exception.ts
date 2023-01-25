@@ -12,3 +12,7 @@ export class SocketAlreadyInRoomException extends Exception {}
 /** cache */
 
 export class CacheRoomInfoNotFoundException extends Exception {}
+
+/** auth */
+
+export class ToeknVerifyFailed extends Exception {}
