@@ -19,7 +19,8 @@ export class ChatGateway {
   @SubscribeMessage(HANDLER_CHAT.SEND_ROOM_CHAT_MESSAGE)
   async sendRoomChatMessage(client: Socket, payload: SendRoomChatMessage) {
     try {
-      return await this.chatGatewayService.sendRoomChatMessage(client, payload);
+      const { message, roomId } = payload;
+      return await this.chatGatewayService.sendRoomChatMessage(client, { message, roomId });
     } catch (e) {
       throw new WsException(e);
     }

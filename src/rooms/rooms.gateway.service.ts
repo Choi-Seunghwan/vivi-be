@@ -10,15 +10,13 @@ import {
   joinSocketRoom,
   leaveSocketRoom,
   sendMessageNewRoomMemberJoined,
-  sendMessageRoomHostLeaved,
   sendMessageRoomMemberLeaved,
 } from 'src/utils/socket.util';
 import { CacheService } from 'src/cache/cache.service';
 import { roomInfoFactory, roomMemberFactory } from './room.utils';
 import { joinRoomPayload } from './payload/join-room.payload';
-import { leaveRoomPayload } from './payload/leave-room.payload';
 import { RoomInfo } from './room.info';
-import { AlreadyJoinedRoomException, RoomCreateFailException, RoomStatusException } from 'src/common/room.exception';
+import { RoomCreateFailException, RoomStatusException } from 'src/common/room.exception';
 import type { Room as SocketRoom } from 'socket.io-adapter';
 import { ROOM_STATUS } from 'src/constants/room.constant';
 
@@ -27,10 +25,10 @@ export class RoomsGatewayService {
   constructor(@InjectRepository(Room) private roomRepository: Repository<Room>, private cacheService: CacheService) {}
 
   async onDisconnection(server: SocketIoServer, client: Socket) {
-    const userInfo: UserInfo = getUserInfoFromSocket(client);
     const rooms: Set<SocketRoom> = client.rooms;
+
     rooms.forEach((roomId) => {
-      sendMessageRoomHostLeaved(server, roomId);
+      this.onLeaveRoom(server, client, roomId);
     });
   }
 
@@ -39,7 +37,7 @@ export class RoomsGatewayService {
     return rooms;
   }
 
-  async onCreateRoom(server: SocketIoServer, client: Socket, user: UserInfo, payload: CreateRoomPayload): Promise<RoomInfo> {
+  async onCreateRoom(server: SocketIoServer, client: Socket, payload: CreateRoomPayload): Promise<RoomInfo> {
     try {
       const { title } = payload;
       const userInfo: UserInfo = getUserInfoFromSocket(client);
@@ -51,7 +49,6 @@ export class RoomsGatewayService {
 
       await joinSocketRoom(client, createdRoom.id);
       const roomInfo = await roomInfoFactory(server, createdRoom, userInfo);
-
       return roomInfo;
     } catch (e) {
       throw e;
@@ -77,9 +74,8 @@ export class RoomsGatewayService {
     }
   }
 
-  async onLeaveRoom(server: SocketIoServer, client: Socket, payload: leaveRoomPayload): Promise<any> {
+  async onLeaveRoom(server: SocketIoServer, client: Socket, roomId: string): Promise<any> {
     try {
-      const { roomId } = payload;
       const roomMember: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
       const room = await this.roomRepository.findOne({ where: { id: roomId } });
 
@@ -87,9 +83,9 @@ export class RoomsGatewayService {
 
       if (isHostLeave) {
         await hostLeaveSocketRoom(server, roomId);
+        await this.roomRepository.update(room, { status: ROOM_STATUS.CLOSED });
       } else {
         await leaveSocketRoom(client, roomId);
-
         await sendMessageRoomMemberLeaved(server, roomMember, roomId);
       }
 

@@ -1,4 +1,5 @@
 import { Server as SocketIoServer, Socket } from 'socket.io';
+import { ChatMessage } from 'src/chat/chat-message.entity';
 import {
   SocketAlreadyInRoomException,
   SocketJoinFailException,
@@ -6,7 +7,12 @@ import {
   SocketLeaveHostFailException,
   SocketNotInRoomException,
 } from 'src/common/common.exception';
-import { MESSAGE_NEW_ROOM_MEMBER_JOINED, MESSAGE_ROOM_HOST_LEAVED, MESSAGE_ROOM_MEMBER_LEAVED } from 'src/constants/message.constant';
+import {
+  MESSAGE_NEW_ROOM_MEMBER_JOINED,
+  MESSAGE_ROOM_CHAT_MESSAGE,
+  MESSAGE_ROOM_HOST_LEAVED,
+  MESSAGE_ROOM_MEMBER_LEAVED,
+} from 'src/constants/message.constant';
 
 export const getUserInfoFromSocket = (socket: Socket): UserInfo | undefined => {
   const userInfo: UserInfo = socket?.handshake?.['user'];
@@ -63,6 +69,14 @@ export const sendMessageRoomMemberLeaved = async (server: SocketIoServer, roomMe
 export const sendMessageRoomHostLeaved = async (server: SocketIoServer, roomId: string) => {
   try {
     server.in(roomId).emit(MESSAGE_ROOM_MEMBER_LEAVED, { roomId });
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const sendChatMessageToRoom = (server: SocketIoServer, roomId: string, chatMessage: ChatMessage) => {
+  try {
+    server.in(roomId).emit(MESSAGE_ROOM_CHAT_MESSAGE, { message: chatMessage });
   } catch (e) {
     throw e;
   }
