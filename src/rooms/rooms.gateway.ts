@@ -19,6 +19,7 @@ import { HANDLER_ROOM } from 'src/constants/message.constant';
 import { WSValidationPipe } from 'src/pipe/WsValidationPipe';
 import { AuthService } from 'src/auth/auth.service';
 import { ToeknVerifyFailed } from 'src/common/common.exception';
+import { SocketAuthUserInfo } from 'src/users/user.decorator';
 
 // @UseFilters(WsExceptionFilter)
 @WebSocketGateway({ ...gatewayOption })
@@ -38,6 +39,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         const { userInfo, token } = await this.authService.validateToken(rawToken);
         client.handshake['user'] = userInfo;
+        return true;
       }
     } catch (e) {
       if (e instanceof ToeknVerifyFailed) return false;
@@ -49,34 +51,21 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     await this.roomGatewayService.onDisconnection(this.server, client);
   }
 
+  @UseGuards(webSocketJwtAuthGuard)
   @SubscribeMessage('ROOM/test')
-  async test(client: Socket) {
+  async test(client: Socket, @SocketAuthUserInfo() userInfo: UserInfo) {
     try {
       console.log('## test');
-      // return 'test';
-      // throw new Error('ee');
     } catch (e) {
       return new WsException(e);
     }
   }
-
-  /*
-  @SubscribeMessage(HANDLER_ROOM.LIST)
-  async getRoomList(client: Socket) {
-    try {
-      const roomList = await this.roomGatewayService.getRoomList(client);
-      return roomList;
-    } catch (e) {
-      return new WsException(e);
-    }
-  }
-  */
 
   @UseGuards(webSocketJwtAuthGuard)
   @SubscribeMessage(HANDLER_ROOM.CREATE_ROOM)
-  async createRoomHandler(client: Socket, payload: CreateRoomPayload) {
+  async createRoomHandler(client: Socket, payload: CreateRoomPayload, @SocketAuthUserInfo() userInfo: UserInfo) {
     try {
-      return await this.roomGatewayService.onCreateRoom(this.server, client, payload);
+      return await this.roomGatewayService.onCreateRoom(this.server, client, userInfo, payload);
     } catch (e) {
       return new WsException(e);
     }

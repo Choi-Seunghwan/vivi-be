@@ -39,7 +39,7 @@ export class RoomsGatewayService {
     return rooms;
   }
 
-  async onCreateRoom(server: SocketIoServer, client: Socket, payload: CreateRoomPayload): Promise<RoomInfo> {
+  async onCreateRoom(server: SocketIoServer, client: Socket, user: UserInfo, payload: CreateRoomPayload): Promise<RoomInfo> {
     try {
       const { title } = payload;
       const userInfo: UserInfo = getUserInfoFromSocket(client);
