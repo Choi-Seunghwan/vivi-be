@@ -20,7 +20,7 @@ export class ChatGateway {
   async sendRoomChatMessage(client: Socket, payload: SendRoomChatMessage) {
     try {
       const { message, roomId } = payload;
-      return await this.chatGatewayService.sendRoomChatMessage(client, { message, roomId });
+      return await this.chatGatewayService.sendRoomChatMessage(this.server, client, { message, roomId });
     } catch (e) {
       throw new WsException(e);
     }
