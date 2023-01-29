@@ -1,4 +1,4 @@
-import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
+import { Logger, UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import {
   MessageBody,
   OnGatewayConnection,
@@ -19,6 +19,8 @@ import { HANDLER_ROOM } from 'src/constants/message.constant';
 import { WSValidationPipe } from 'src/pipe/WsValidationPipe';
 import { AuthService } from 'src/auth/auth.service';
 import { ToeknVerifyFailed } from 'src/common/common.exception';
+import { RoomInfo } from './room.info';
+import { RoomNotFoundException } from 'src/common/room.exception';
 
 // @UseFilters(WsExceptionFilter)
 @WebSocketGateway({ ...gatewayOption })
@@ -26,6 +28,7 @@ import { ToeknVerifyFailed } from 'src/common/common.exception';
 export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: SocketIoServer;
+  logger = new Logger(RoomsGateway.name);
 
   constructor(private readonly roomGatewayService: RoomsGatewayService, private readonly authService: AuthService) {}
 
@@ -55,8 +58,9 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('ROOM/test')
   async test(client: Socket) {
     try {
-      console.log('## test', client);
+      throw new RoomNotFoundException({ args: { a, b } });
     } catch (e) {
+      this.logger.error(e);
       return new WsException(e);
     }
   }
@@ -65,7 +69,8 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage(HANDLER_ROOM.CREATE_ROOM)
   async createRoomHandler(client: Socket, payload: CreateRoomPayload) {
     try {
-      return await this.roomGatewayService.onCreateRoom(this.server, client, payload);
+      const roomInfo = await this.roomGatewayService.onCreateRoom(this.server, client, payload);
+      return roomInfo;
     } catch (e) {
       return new WsException(e);
     }
@@ -78,6 +83,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const result = await this.roomGatewayService.onJoinRoom(this.server, client, payload);
       return result;
     } catch (e) {
+      this.logger.error(e);
       return new WsException(e);
     }
   }

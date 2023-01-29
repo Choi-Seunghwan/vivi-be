@@ -1,4 +1,4 @@
-import { Exception } from 'src/common/Exception';
+import { Exception } from 'src/common/exception';
 
 export class RoomNotFoundException extends Exception {}
 export class RoomStatusException extends Exception {}

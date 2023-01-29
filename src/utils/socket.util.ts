@@ -26,7 +26,7 @@ export const joinSocketRoom = async (socket: Socket, roomId: string): Promise<vo
     await socket.join(roomId);
   } catch (e) {
     if (e instanceof SocketAlreadyInRoomException) throw e;
-    throw new SocketJoinFailException(e);
+    throw new SocketJoinFailException();
   }
 };
 
@@ -37,7 +37,7 @@ export const leaveSocketRoom = async (socket: Socket, roomId: string) => {
     await socket.leave(roomId);
   } catch (e) {
     if (e instanceof SocketNotInRoomException) throw e;
-    throw new SocketLeaveFailException(e);
+    throw new SocketLeaveFailException();
   }
 };
 
@@ -46,7 +46,7 @@ export const hostLeaveSocketRoom = async (server: SocketIoServer, roomId) => {
     server.in(roomId).emit(MESSAGE_ROOM_HOST_LEAVED, { roomId });
     server.in(roomId).socketsLeave(roomId);
   } catch (e) {
-    throw new SocketLeaveHostFailException(e);
+    throw new SocketLeaveHostFailException();
   }
 };
 

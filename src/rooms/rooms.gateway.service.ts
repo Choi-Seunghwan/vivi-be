@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Server as SocketIoServer, Socket } from 'socket.io';
 import { CreateRoomPayload } from './payload/create-room.payload';
 import { Repository } from 'typeorm';
@@ -16,20 +16,18 @@ import { CacheService } from 'src/cache/cache.service';
 import { roomInfoFactory, roomMemberFactory } from './room.utils';
 import { joinRoomPayload } from './payload/join-room.payload';
 import { RoomInfo } from './room.info';
-import { RoomCreateFailException, RoomStatusException } from 'src/common/room.exception';
+import { RoomNotFoundException, RoomCreateFailException, RoomStatusException } from 'src/common/room.exception';
 import type { Room as SocketRoom } from 'socket.io-adapter';
 import { ROOM_STATUS } from 'src/constants/room.constant';
 
 @Injectable()
 export class RoomsGatewayService {
+  logger = new Logger(RoomsGatewayService.name);
+
   constructor(@InjectRepository(Room) private roomRepository: Repository<Room>, private cacheService: CacheService) {}
 
   async onDisconnection(server: SocketIoServer, client: Socket) {
-    const rooms: Set<SocketRoom> = client.rooms;
-
-    rooms.forEach((roomId) => {
-      this.onLeaveRoom(server, client, roomId);
-    });
+    // const rooms: Set<SocketRoom> = client.rooms;
   }
 
   async getRoomList(client: Socket) {
@@ -42,7 +40,12 @@ export class RoomsGatewayService {
       const { title } = payload;
       const userInfo: UserInfo = getUserInfoFromSocket(client);
 
-      const createdRoom: Room = this.roomRepository.create({ host: userInfo, title, status: ROOM_STATUS.IN_PROGRESS });
+      const createdRoom: Room = this.roomRepository.create({
+        host: userInfo,
+        title,
+        status: ROOM_STATUS.IN_PROGRESS,
+        startDate: new Date(),
+      });
       await this.roomRepository.save(createdRoom);
 
       if (!createdRoom) throw new RoomCreateFailException();
@@ -51,6 +54,7 @@ export class RoomsGatewayService {
       const roomInfo = await roomInfoFactory(server, createdRoom, userInfo);
       return roomInfo;
     } catch (e) {
+      this.logger.error(e);
       throw e;
     }
   }
@@ -61,7 +65,8 @@ export class RoomsGatewayService {
       const member: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
       const room = await this.roomRepository.findOne({ where: { id: roomId } });
 
-      if (room.status !== ROOM_STATUS.IN_PROGRESS) throw new RoomStatusException();
+      if (!room) throw new RoomNotFoundException();
+      if (room?.status !== ROOM_STATUS.IN_PROGRESS) throw new RoomStatusException();
 
       await joinSocketRoom(client, roomId);
       await sendMessageNewRoomMemberJoined(client, member, roomId);
@@ -70,9 +75,12 @@ export class RoomsGatewayService {
 
       return roomInfo;
     } catch (e) {
+      this.logger.error(e);
       throw e;
     }
   }
+
+  async onCloseRoom(server: SocketIoServer) {}
 
   async onLeaveRoom(server: SocketIoServer, client: Socket, roomId: string): Promise<any> {
     try {
@@ -83,7 +91,7 @@ export class RoomsGatewayService {
 
       if (isHostLeave) {
         await hostLeaveSocketRoom(server, roomId);
-        await this.roomRepository.update(room, { status: ROOM_STATUS.CLOSED });
+        await this.roomRepository.update(room, { status: ROOM_STATUS.CLOSED, endDate: Date.now() });
       } else {
         await leaveSocketRoom(client, roomId);
         await sendMessageRoomMemberLeaved(server, roomMember, roomId);

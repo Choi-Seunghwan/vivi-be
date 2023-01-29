@@ -1,11 +1,14 @@
-export class Exception {
-  code?: string;
+export class Exception extends Error {
+  name: string;
+  args: object;
   description?: string;
-  error: object | undefined;
-  exceptionName: string;
+  code?: string;
 
-  constructor(error: object | undefined = undefined) {
-    if (error) this.error = error;
-    this.exceptionName = this.constructor.name;
+  constructor({ code = '', description = '', args = {} } = {}) {
+    super();
+    this.name = this.constructor.name;
+    this.args = args;
+    if (code) this.code = code;
+    if (description) this.description = description;
   }
 }

@@ -19,14 +19,14 @@ export class WebSocketJwtStrategy extends PassportStrategy(Strategy, 'webSocketJ
     });
   }
 
-  async validate(req, payload: TokenPayload): Promise<{ user: UserInfo; token: string } | boolean> {
-    const rawToken = req.headers['authorization'].split(' ')[1];
+  async validate(req, payload: TokenPayload): Promise<UserInfo | boolean> {
+    // const rawToken = req.headers['authorization'].split(' ')[1];
     const { email } = payload;
     const user: User = await this.authService.validateUser(email);
 
     if (!user) return false;
 
     const userInfo = userInfoFactory(user);
-    return { user: userInfo, token: rawToken };
+    return userInfo;
   }
 }
