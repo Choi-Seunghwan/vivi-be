@@ -58,7 +58,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('ROOM/test')
   async test(client: Socket) {
     try {
-      throw new RoomNotFoundException({ args: { a, b } });
+      throw new RoomNotFoundException();
     } catch (e) {
       this.logger.error(e);
       return new WsException(e);

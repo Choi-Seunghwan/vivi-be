@@ -12,7 +12,7 @@ export class Room {
   title: string;
 
   @ManyToOne(() => User, (user) => user.rooms)
-  @JoinColumn({ name: 'user_id' })
+  // @JoinColumn({ name: 'user_id' })
   host: User;
 
   @OneToMany(() => ChatMessage, (chatMessage) => chatMessage.room)

@@ -16,7 +16,7 @@ import { CacheService } from 'src/cache/cache.service';
 import { roomInfoFactory, roomMemberFactory } from './room.utils';
 import { joinRoomPayload } from './payload/join-room.payload';
 import { RoomInfo } from './room.info';
-import { RoomNotFoundException, RoomCreateFailException, RoomStatusException } from 'src/common/room.exception';
+import { RoomNotFoundException, RoomCreateFailException, RoomStatusException, HostAlreadyRoomInProgress } from 'src/common/room.exception';
 import type { Room as SocketRoom } from 'socket.io-adapter';
 import { ROOM_STATUS } from 'src/constants/room.constant';
 
@@ -28,6 +28,7 @@ export class RoomsGatewayService {
 
   async onDisconnection(server: SocketIoServer, client: Socket) {
     // const rooms: Set<SocketRoom> = client.rooms;
+    // const userInfo: UserInfo = getUserInfoFromSocket(client);
   }
 
   async getRoomList(client: Socket) {
@@ -40,6 +41,10 @@ export class RoomsGatewayService {
       const { title } = payload;
       const userInfo: UserInfo = getUserInfoFromSocket(client);
 
+      const rooms: Room[] = await this.roomRepository.find({ where: { host: { id: userInfo.id }, status: ROOM_STATUS.IN_PROGRESS } });
+
+      if (rooms.length) throw new HostAlreadyRoomInProgress();
+
       const createdRoom: Room = this.roomRepository.create({
         host: userInfo,
         title,
@@ -48,7 +53,7 @@ export class RoomsGatewayService {
       });
       await this.roomRepository.save(createdRoom);
 
-      if (!createdRoom) throw new RoomCreateFailException();
+      if (!createdRoom) throw new RoomCreateFailException({ args: { rooms } });
 
       await joinSocketRoom(client, createdRoom.id);
       const roomInfo = await roomInfoFactory(server, createdRoom, userInfo);

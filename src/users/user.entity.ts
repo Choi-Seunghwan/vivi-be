@@ -22,6 +22,6 @@ export class User {
   createdDate: Date;
 
   @OneToMany(() => Room, (room) => room.host)
-  @JoinColumn({ name: 'room_id' })
+  // @JoinColumn({ name: 'room_id' })
   rooms: Room[];
 }
