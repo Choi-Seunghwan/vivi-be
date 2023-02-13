@@ -14,6 +14,7 @@ export class ChatGatewayService {
     try {
       const userInfo: UserInfo = getUserInfoFromSocket(client);
       const chatMessage: ChatMessage = this.chatMessageRepository.create({ user: userInfo, message, room: { id: roomId } });
+
       await this.chatMessageRepository.save(chatMessage);
 
       sendChatMessageToRoom(server, roomId, chatMessage);

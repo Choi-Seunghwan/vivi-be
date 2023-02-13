@@ -15,7 +15,7 @@ import { WsException } from '@nestjs/websockets';
 import { joinRoomPayload } from './payload/join-room.payload';
 import { leaveRoomPayload } from './payload/leave-room.payload';
 import { gatewayOption } from 'src/common/gateway-option';
-import { HANDLER_ROOM } from 'src/constants/message.constant';
+import { MESSAGE_ROOM } from 'src/constants/message.constant';
 import { WSValidationPipe } from 'src/pipe/WsValidationPipe';
 import { AuthService } from 'src/auth/auth.service';
 import { ToeknVerifyFailed } from 'src/common/common.exception';
@@ -66,7 +66,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @UseGuards(webSocketJwtAuthGuard)
-  @SubscribeMessage(HANDLER_ROOM.CREATE_ROOM)
+  @SubscribeMessage(MESSAGE_ROOM.CREATE_ROOM)
   async createRoomHandler(client: Socket, payload: CreateRoomPayload) {
     try {
       const roomInfo = await this.roomGatewayService.onCreateRoom(this.server, client, payload);
@@ -77,7 +77,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @UseGuards(webSocketJwtAuthGuard)
-  @SubscribeMessage(HANDLER_ROOM.JOIN_ROOM)
+  @SubscribeMessage(MESSAGE_ROOM.JOIN_ROOM)
   async joinRoomHandler(client: Socket, payload: joinRoomPayload) {
     try {
       const result = await this.roomGatewayService.onJoinRoom(this.server, client, payload);
@@ -89,7 +89,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @UseGuards(webSocketJwtAuthGuard)
-  @SubscribeMessage(HANDLER_ROOM.LEAVE_ROOM)
+  @SubscribeMessage(MESSAGE_ROOM.LEAVE_ROOM)
   async leaveRoomHandler(client: Socket, payload: leaveRoomPayload) {
     try {
       const { roomId } = payload;
