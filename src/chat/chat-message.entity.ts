@@ -14,7 +14,7 @@ export class ChatMessage {
   @Column({ nullable: false })
   message: string;
 
-  @OneToMany(() => Room, (room) => room.id)
+  @ManyToOne(() => Room, (room) => room.id)
   @JoinColumn({ name: 'room_id' })
   room: Room;
 

@@ -4,11 +4,10 @@ import { ChatMessage } from './chat-message.entity';
 import { Repository } from 'typeorm';
 import { Server as SocketIoServer, Socket } from 'socket.io';
 import { getUserInfoFromSocket, sendChatMessageToRoom } from 'src/utils/socket.util';
-import { CacheService } from 'src/cache/cache.service';
 
 @Injectable()
 export class ChatGatewayService {
-  constructor(@InjectRepository(ChatMessage) private chatMessageRepository: Repository<ChatMessage>, private cacheService: CacheService) {}
+  constructor(@InjectRepository(ChatMessage) private chatMessageRepository: Repository<ChatMessage>) {}
 
   async sendRoomChatMessage(server: SocketIoServer, client: Socket, { message, roomId }) {
     try {

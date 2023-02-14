@@ -5,10 +5,12 @@ import { gatewayOption } from 'src/common/gateway-option';
 import { SendRoomChatMessage } from './dto/send-room-chat-message.payload';
 import { ChatGatewayService } from './chat.gateway.service';
 import { MESSAGE_CHAT } from 'src/constants/message.constant';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, UsePipes } from '@nestjs/common';
 import { webSocketJwtAuthGuard } from 'src/auth/guards/web-socket-jwt-auth.guard';
+import { WSValidationPipe } from 'src/pipe/WsValidationPipe';
 
 @WebSocketGateway(gatewayOption)
+@UsePipes(new WSValidationPipe())
 export class ChatGateway {
   @WebSocketServer()
   server: SocketIoServer;

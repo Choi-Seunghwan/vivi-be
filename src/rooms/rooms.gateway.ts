@@ -1,12 +1,5 @@
-import { Logger, UseFilters, UseGuards, UsePipes } from '@nestjs/common';
-import {
-  MessageBody,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-} from '@nestjs/websockets';
+import { Logger, UseGuards, UsePipes } from '@nestjs/common';
+import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server as SocketIoServer, Socket } from 'socket.io';
 import { webSocketJwtAuthGuard } from 'src/auth/guards/web-socket-jwt-auth.guard';
 import { CreateRoomPayload } from './payload/create-room.payload';
@@ -19,7 +12,6 @@ import { MESSAGE_ROOM } from 'src/constants/message.constant';
 import { WSValidationPipe } from 'src/pipe/WsValidationPipe';
 import { AuthService } from 'src/auth/auth.service';
 import { ToeknVerifyFailed } from 'src/common/common.exception';
-import { RoomInfo } from './room.info';
 import { RoomNotFoundException } from 'src/common/room.exception';
 
 // @UseFilters(WsExceptionFilter)

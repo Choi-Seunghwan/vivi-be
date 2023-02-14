@@ -56,6 +56,7 @@ export class RoomsGatewayService {
       if (!createdRoom) throw new RoomCreateFailException({ args: { rooms } });
 
       await joinSocketRoom(client, createdRoom.id);
+
       const roomInfo: RoomInfo = await roomInfoFactory(server, createdRoom, userInfo);
       return roomInfo;
     } catch (e) {
