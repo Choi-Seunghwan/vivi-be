@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ChatMessage } from './chat-message.entity';
 import { Repository } from 'typeorm';
 import { Server as SocketIoServer, Socket } from 'socket.io';
-import { getUserInfoFromSocket, sendChatMessageToRoom } from 'src/utils/socket.util';
+import { getUserInfoFromSocket, sendChatMessageToClient, sendChatMessageToRoom } from 'src/utils/socket.util';
 
 @Injectable()
 export class ChatGatewayService {

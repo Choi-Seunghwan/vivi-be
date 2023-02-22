@@ -9,6 +9,7 @@ import {
   hostLeaveSocketRoom,
   joinSocketRoom,
   leaveSocketRoom,
+  sendChatMessageToClient,
   sendMessageNewRoomMemberJoined,
   sendMessageRoomMemberLeaved,
 } from 'src/utils/socket.util';
@@ -17,14 +18,19 @@ import { roomInfoFactory, roomMemberFactory } from './room.utils';
 import { joinRoomPayload } from './payload/join-room.payload';
 import { RoomInfo } from './room.info';
 import { RoomNotFoundException, RoomCreateFailException, RoomStatusException, HostAlreadyRoomInProgress } from 'src/common/room.exception';
-import type { Room as SocketRoom } from 'socket.io-adapter';
 import { ROOM_STATUS } from 'src/constants/room.constant';
+import { ChatMessage } from '../chat/chat-message.entity';
+import { CHAT_MESSAGE_TYPE_SYSTEM, SYSTEM_CHAT_MESSAGE_ROOM_CREATED } from 'src/chat/chat.constant';
 
 @Injectable()
 export class RoomsGatewayService {
   logger = new Logger(RoomsGatewayService.name);
 
-  constructor(@InjectRepository(Room) private roomRepository: Repository<Room>, private cacheService: CacheService) {}
+  constructor(
+    @InjectRepository(Room) private roomRepository: Repository<Room>,
+    @InjectRepository(ChatMessage) private chatMessageRepository: Repository<ChatMessage>,
+    private cacheService: CacheService
+  ) {}
 
   async onDisconnection(server: SocketIoServer, client: Socket) {
     // const rooms: Set<SocketRoom> = client.rooms;
@@ -56,6 +62,14 @@ export class RoomsGatewayService {
       if (!createdRoom) throw new RoomCreateFailException({ args: { rooms } });
 
       await joinSocketRoom(client, createdRoom.id);
+
+      const systemChatMessage: ChatMessage = this.chatMessageRepository.create({
+        user: userInfo,
+        room: { id: createdRoom.id },
+        message: SYSTEM_CHAT_MESSAGE_ROOM_CREATED,
+        type: CHAT_MESSAGE_TYPE_SYSTEM,
+      });
+      await sendChatMessageToClient(client, systemChatMessage);
 
       const roomInfo: RoomInfo = await roomInfoFactory(server, createdRoom, userInfo);
       return roomInfo;
