@@ -49,7 +49,7 @@ export class RoomsGatewayService {
 
       const rooms: Room[] = await this.roomRepository.find({ where: { host: { id: userInfo.id }, status: ROOM_STATUS.IN_PROGRESS } });
 
-      if (rooms.length) throw new HostAlreadyRoomInProgress();
+      // if (rooms.length) throw new HostAlreadyRoomInProgress();
 
       const createdRoom: Room = this.roomRepository.create({
         host: userInfo,
@@ -64,7 +64,6 @@ export class RoomsGatewayService {
       await joinSocketRoom(client, createdRoom.id);
 
       const systemChatMessage: ChatMessage = this.chatMessageRepository.create({
-        user: userInfo,
         room: { id: createdRoom.id },
         message: SYSTEM_CHAT_MESSAGE_ROOM_CREATED,
         type: CHAT_MESSAGE_TYPE_SYSTEM,

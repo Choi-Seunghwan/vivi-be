@@ -70,12 +70,12 @@ export const sendMessageRoomHostLeaved = async (server: SocketIoServer, roomId: 
 };
 
 export const sendChatMessageToClient = async (socket: Socket, chatMessage: ChatMessage) => {
-  socket.emit(MESSAGE_CHAT.ROOM_CHAT_MESSAGE, { message: chatMessage });
+  socket.emit(MESSAGE_CHAT.ROOM_CHAT_MESSAGE, chatMessage);
 };
 
 export const sendChatMessageToRoom = (server: SocketIoServer, roomId: string, chatMessage: ChatMessage) => {
   try {
-    server.in(roomId).emit(MESSAGE_CHAT.ROOM_CHAT_MESSAGE, { message: chatMessage });
+    server.in(roomId).emit(MESSAGE_CHAT.ROOM_CHAT_MESSAGE, chatMessage);
   } catch (e) {
     throw e;
   }
