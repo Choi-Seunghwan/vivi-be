@@ -73,7 +73,6 @@ export class RoomsGatewayService {
       const roomInfo: RoomInfo = await roomInfoFactory(server, createdRoom, userInfo);
       return roomInfo;
     } catch (e) {
-      this.logger.error(e);
       throw e;
     }
   }
@@ -88,13 +87,18 @@ export class RoomsGatewayService {
       if (room?.status !== ROOM_STATUS.IN_PROGRESS) throw new RoomStatusException();
 
       await joinSocketRoom(client, roomId);
-      await sendMessageNewRoomMemberJoined(client, member, roomId);
+
+      const systemChatMessage: ChatMessage = this.chatMessageRepository.create({
+        room: { id: room.id },
+        message: SYSTEM_CHAT_MESSAGE_ROOM_CREATED,
+        type: CHAT_MESSAGE_TYPE_SYSTEM,
+      });
+      await sendMessageNewRoomMemberJoined(server, member, roomId, systemChatMessage);
 
       const roomInfo = await roomInfoFactory(server, room, room.host);
 
       return roomInfo;
     } catch (e) {
-      this.logger.error(e);
       throw e;
     }
   }

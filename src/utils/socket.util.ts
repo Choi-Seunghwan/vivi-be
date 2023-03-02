@@ -45,9 +45,14 @@ export const hostLeaveSocketRoom = async (server: SocketIoServer, roomId) => {
   }
 };
 
-export const sendMessageNewRoomMemberJoined = async (socket: Socket, roomMember: RoomMember, roomId: string) => {
+export const sendMessageNewRoomMemberJoined = async (
+  server: SocketIoServer,
+  roomMember: RoomMember,
+  roomId: string,
+  chatMessage: ChatMessage
+) => {
   try {
-    socket.to(roomId).emit(MESSAGE_ROOM.NEW_ROOM_MEMBER_JOINED, { roomMember, roomId });
+    server.in(roomId).emit(MESSAGE_ROOM.NEW_ROOM_MEMBER_JOINED, { roomMember, roomId, chatMessage });
   } catch (e) {
     throw e;
   }
