@@ -20,7 +20,8 @@ import { RoomInfo } from './room.info';
 import { RoomNotFoundException, RoomCreateFailException, RoomStatusException, HostAlreadyRoomInProgress } from 'src/common/room.exception';
 import { ROOM_STATUS } from 'src/constants/room.constant';
 import { ChatMessage } from '../chat/chat-message.entity';
-import { CHAT_MESSAGE_TYPE_SYSTEM, SYSTEM_CHAT_MESSAGE_ROOM_CREATED } from 'src/chat/chat.constant';
+import { CHAT_MESSAGE_TYPE_SYSTEM, SYSTEM_CHAT_MESSAGE_ROOM_CREATED, SYSTEM_CHAT_MESSAGE_ROOM_MEMBER_JOINED } from 'src/chat/chat.constant';
+import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class RoomsGatewayService {
@@ -90,7 +91,7 @@ export class RoomsGatewayService {
 
       const systemChatMessage: ChatMessage = this.chatMessageRepository.create({
         room: { id: room.id },
-        message: SYSTEM_CHAT_MESSAGE_ROOM_CREATED,
+        message: SYSTEM_CHAT_MESSAGE_ROOM_MEMBER_JOINED,
         type: CHAT_MESSAGE_TYPE_SYSTEM,
       });
       await sendMessageNewRoomMemberJoined(server, member, roomId, systemChatMessage);
@@ -108,13 +109,13 @@ export class RoomsGatewayService {
   async onLeaveRoom(server: SocketIoServer, client: Socket, roomId: string): Promise<any> {
     try {
       const roomMember: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
-      const room = await this.roomRepository.findOne({ where: { id: roomId } });
+      const room = await this.roomRepository.findOne({ where: { id: roomId }, relations: ['host'] });
 
       const isHostLeave = roomMember.id === room?.host?.id;
 
       if (isHostLeave) {
         await hostLeaveSocketRoom(server, roomId);
-        await this.roomRepository.update(room, { status: ROOM_STATUS.CLOSED, endDate: Date.now() });
+        await this.roomRepository.update(room.id, { status: ROOM_STATUS.CLOSED, endDate: new Date() });
       } else {
         await leaveSocketRoom(client, roomId);
         await sendMessageRoomMemberLeaved(server, roomMember, roomId);

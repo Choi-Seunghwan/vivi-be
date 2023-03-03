@@ -10,7 +10,7 @@ import { RoomInfo } from './room.info';
 import { RoomNotFoundException, RoomStatusException } from 'src/common/room.exception';
 import { RoomsGateway } from './rooms.gateway';
 
-@Controller('room')
+@Controller('rooms')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService, private readonly roomsGateway: RoomsGateway) {}
 

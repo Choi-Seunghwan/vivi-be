@@ -36,10 +36,10 @@ export const leaveSocketRoom = async (socket: Socket, roomId: string) => {
   }
 };
 
-export const hostLeaveSocketRoom = async (server: SocketIoServer, roomId) => {
+export const hostLeaveSocketRoom = async (server: SocketIoServer, roomId: string) => {
   try {
     server.in(roomId).emit(MESSAGE_ROOM.HOST_LEAVED, { roomId });
-    server.in(roomId).socketsLeave(roomId);
+    server.socketsLeave(roomId);
   } catch (e) {
     throw new SocketLeaveHostFailException();
   }
