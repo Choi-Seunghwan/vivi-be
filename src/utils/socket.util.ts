@@ -19,6 +19,7 @@ export const joinSocketRoom = async (socket: Socket, roomId: string): Promise<vo
     if (socket.rooms.has(roomId)) throw new SocketAlreadyInRoomException();
 
     await socket.join(roomId);
+    socket.data.room = roomId;
   } catch (e) {
     if (e instanceof SocketAlreadyInRoomException) throw e;
     throw new SocketJoinFailException();
@@ -30,6 +31,7 @@ export const leaveSocketRoom = async (socket: Socket, roomId: string) => {
     if (socket.rooms.has(roomId)) throw new SocketNotInRoomException();
 
     await socket.leave(roomId);
+    socket.data.room = undefined;
   } catch (e) {
     if (e instanceof SocketNotInRoomException) throw e;
     throw new SocketLeaveFailException();
