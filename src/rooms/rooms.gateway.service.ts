@@ -34,8 +34,9 @@ export class RoomsGatewayService {
   ) {}
 
   async onDisconnection(server: SocketIoServer, client: Socket) {
-    // const rooms: Set<SocketRoom> = client.rooms;
+    const room: string = client?.data?.room;
     // const userInfo: UserInfo = getUserInfoFromSocket(client);
+    if (room) this.onLeaveRoom(server, client, room);
   }
 
   async getRoomList(client: Socket) {
