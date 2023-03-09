@@ -9,15 +9,14 @@ export class CustomLogger extends ConsoleLogger {
   }
 
   */
-  error(error: Exception | Error) {
-    const { message, stack } = error;
-    const args: Object = error['args'];
-    const context = args ? JSON.stringify(args) : null;
-    super.error(message, stack, context);
+
+  debug(message: string, trace: string) {
+    super.debug(message, trace);
   }
 
-  debug(error: Error) {
+  error(error: Exception | Error, args: any) {
     const { message, stack } = error;
-    super.debug(message, stack);
+    const context = args ? JSON.stringify(args) : null;
+    super.error(message, stack, context);
   }
 }
