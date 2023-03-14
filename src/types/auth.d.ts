@@ -1,3 +1,5 @@
+export type Role = 'ADMIN' | '';
+
 declare type TokenPayload = {
   id: string;
   email: string;

@@ -105,8 +105,6 @@ export class RoomsGatewayService {
     }
   }
 
-  async onCloseRoom(server: SocketIoServer) {}
-
   async onLeaveRoom(server: SocketIoServer, client: Socket, roomId: string): Promise<any> {
     try {
       const roomMember: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));

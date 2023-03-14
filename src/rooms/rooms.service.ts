@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
@@ -14,6 +14,8 @@ import { RoomNotFoundException, RoomStatusException } from 'src/common/room.exce
 
 @Injectable()
 export class RoomsService {
+  logger = new Logger(RoomsService.name);
+
   constructor(
     @InjectRepository(Room)
     private roomRepository: Repository<Room>,
@@ -21,9 +23,14 @@ export class RoomsService {
   ) {}
 
   async getRoomList(server): Promise<RoomInfo[]> {
-    const rooms: Room[] = await this.roomRepository.find({ where: { status: ROOM_STATUS.IN_PROGRESS } });
-    const roomInfos = Promise.all(rooms.map(async (r) => await roomInfoFactory(server, r, r.host)));
-    return roomInfos;
+    try {
+      const rooms: Room[] = await this.roomRepository.find({ where: { status: ROOM_STATUS.IN_PROGRESS } });
+      const roomInfos = Promise.all(rooms.map(async (r) => await roomInfoFactory(server, r, r.host)));
+      return roomInfos;
+    } catch (e) {
+      this.logger.error(e);
+      throw e;
+    }
   }
 
   /*

@@ -16,9 +16,13 @@ export class RoomsController {
 
   @Get('/')
   async getRooms(): Promise<RoomInfo[]> {
-    const server = this.roomsGateway.server;
-    const roomInfoList: RoomInfo[] = await this.roomsService.getRoomList(server);
-    return roomInfoList;
+    try {
+      const server = this.roomsGateway.server;
+      const roomInfoList: RoomInfo[] = await this.roomsService.getRoomList(server);
+      return roomInfoList;
+    } catch (e) {
+      throw e;
+    }
   }
 
   /*
