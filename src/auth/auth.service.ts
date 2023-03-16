@@ -10,6 +10,7 @@ import { SignInDto } from './dto/sign-in-dto';
 import { userInfoFactory } from 'src/users/user.utils';
 import { webSocketJwtAuthGuard } from './guards/web-socket-jwt-auth.guard';
 import { ToeknVerifyFailed } from 'src/common/common.exception';
+import { TokenPayload, UserInfo } from 'src/types/auth';
 
 @Injectable()
 export class AuthService {

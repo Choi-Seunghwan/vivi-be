@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpException, HttpStatus, Request, UseGuards } 
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { TokenPayload } from 'src/types/auth';
 
 @Controller('users')
 export class UsersController {

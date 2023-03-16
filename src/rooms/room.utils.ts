@@ -4,6 +4,7 @@ import { Room } from './room.entity';
 import { RoomInfo } from './room.info';
 import { Server } from 'socket.io';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+import { UserInfo } from 'src/types/auth';
 
 export const roomInfoFactory = async (server: Server, room: Room, host: RoomMember): Promise<RoomInfo> => {
   const roomInfo: RoomInfo = new RoomInfo({ roomId: room.id, title: room.title, host });

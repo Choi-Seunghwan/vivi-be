@@ -3,6 +3,10 @@ import { User } from 'src/users/user.entity';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CHAT_MESSAGE_TYPE, CHAT_MESSAGE_TYPE_NORMAL } from './chat.constant';
 
+export type MessageInfo = {
+  message: string;
+  nickname?: string;
+};
 @Entity()
 export class ChatMessage {
   @PrimaryGeneratedColumn('uuid')
@@ -12,8 +16,8 @@ export class ChatMessage {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ nullable: false })
-  message: string;
+  @Column({ type: process.env.NODE_ENV === 'local' ? 'simple-json' : 'json' })
+  messageInfo: MessageInfo;
 
   @ManyToOne(() => Room, (room) => room.id)
   @JoinColumn({ name: 'room_id' })

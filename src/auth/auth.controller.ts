@@ -7,6 +7,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { userInfoFactory } from 'src/users/user.utils';
 import { AuthUserInfo } from 'src/users/user.decorator';
+import { UserInfo } from 'src/types/auth';
 // async temp(@Headers('Authorization') auth){} - param Decorator
 @Controller('auth')
 export class AuthController {

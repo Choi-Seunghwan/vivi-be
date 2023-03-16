@@ -22,6 +22,7 @@ import { ROOM_STATUS } from 'src/constants/room.constant';
 import { ChatMessage } from '../chat/chat-message.entity';
 import { CHAT_MESSAGE_TYPE_SYSTEM, SYSTEM_CHAT_MESSAGE_ROOM_CREATED, SYSTEM_CHAT_MESSAGE_ROOM_MEMBER_JOINED } from 'src/chat/chat.constant';
 import { WsException } from '@nestjs/websockets';
+import { UserInfo } from 'src/types/auth';
 
 @Injectable()
 export class RoomsGatewayService {
@@ -67,7 +68,7 @@ export class RoomsGatewayService {
 
       const systemChatMessage: ChatMessage = this.chatMessageRepository.create({
         room: { id: createdRoom.id },
-        message: SYSTEM_CHAT_MESSAGE_ROOM_CREATED,
+        messageInfo: { message: SYSTEM_CHAT_MESSAGE_ROOM_CREATED },
         type: CHAT_MESSAGE_TYPE_SYSTEM,
       });
       await sendChatMessageToClient(client, systemChatMessage);
@@ -92,7 +93,7 @@ export class RoomsGatewayService {
 
       const systemChatMessage: ChatMessage = this.chatMessageRepository.create({
         room: { id: room.id },
-        message: SYSTEM_CHAT_MESSAGE_ROOM_MEMBER_JOINED,
+        messageInfo: { message: SYSTEM_CHAT_MESSAGE_ROOM_MEMBER_JOINED, nickname: member.nickname },
         type: CHAT_MESSAGE_TYPE_SYSTEM,
       });
       await sendMessageNewRoomMemberJoined(server, member, roomId, systemChatMessage);

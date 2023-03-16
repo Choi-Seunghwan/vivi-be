@@ -1,3 +1,4 @@
+import { UserInfo } from 'src/types/auth';
 import { User } from './user.entity';
 
 export const userInfoFactory = (user: User): UserInfo => {

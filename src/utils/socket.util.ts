@@ -8,6 +8,7 @@ import {
   SocketNotInRoomException,
 } from 'src/common/common.exception';
 import { MESSAGE_CHAT, MESSAGE_ROOM } from 'src/constants/message.constant';
+import { UserInfo } from 'src/types/auth';
 
 export const getUserInfoFromSocket = (socket: Socket): UserInfo | undefined => {
   const userInfo: UserInfo = socket?.handshake?.['user'];

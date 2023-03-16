@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { User } from 'src/users/user.entity';
 import { AuthService } from './auth.service';
 import { userInfoFactory } from 'src/users/user.utils';
+import { TokenPayload, UserInfo } from 'src/types/auth';
 
 @Injectable()
 export class WebSocketJwtStrategy extends PassportStrategy(Strategy, 'webSocketJwt') {
