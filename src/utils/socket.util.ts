@@ -7,7 +7,7 @@ import {
   SocketLeaveHostFailException,
   SocketNotInRoomException,
 } from 'src/common/common.exception';
-import { MESSAGE_CHAT, MESSAGE_ROOM } from 'src/constants/message.constant';
+import { MESSAGE_CHAT, MESSAGE_PC, MESSAGE_ROOM } from 'src/constants/message.constant';
 import { UserInfo } from 'src/types/auth';
 
 export const getUserInfoFromSocket = (socket: Socket): UserInfo | undefined => {
@@ -84,6 +84,22 @@ export const sendChatMessageToClient = async (socket: Socket, chatMessage: ChatM
 export const sendChatMessageToRoom = (server: SocketIoServer, roomId: string, chatMessage: ChatMessage) => {
   try {
     server.in(roomId).emit(MESSAGE_CHAT.ROOM_CHAT_MESSAGE, chatMessage);
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const sendOffer = (socket: Socket, { offer, socketId, member }) => {
+  try {
+    socket.to(socketId).emit(MESSAGE_PC.RECEIVE_OFFER, { offer, member });
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const sendAnswer = (socket: Socket, { answer, socketId, member }) => {
+  try {
+    socket.to(socketId).emit(MESSAGE_PC.RECEIVE_ANSWER, { answer, member });
   } catch (e) {
     throw e;
   }

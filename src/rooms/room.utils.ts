@@ -1,4 +1,5 @@
 import { ROOM_STATUS } from 'src/constants/room.constant';
+import { Socket } from 'socket.io';
 import { User } from 'src/users/user.entity';
 import { Room } from './room.entity';
 import { RoomInfo } from './room.info';
@@ -16,8 +17,9 @@ export const roomInfoFactory = async (server: Server, room: Room, host: RoomMemb
 };
 
 export const roomMemberFactory = (userInfo: UserInfo): RoomMember => {
-  const { id, email, nickname } = userInfo;
-  const roomMember: RoomMember = { id, email, nickname };
+  const { id, email, nickname, socketId } = userInfo;
+
+  const roomMember: RoomMember = { id, email, nickname, socketId };
   return roomMember;
 };
 

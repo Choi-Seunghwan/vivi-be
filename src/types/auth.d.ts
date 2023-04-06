@@ -1,16 +1,17 @@
 export type Role = 'ADMIN' | '';
 
-declare type TokenPayload = {
+export interface TokenPayload {
   id: string;
   email: string;
   nickname: string;
-};
+}
 
-declare type UserInfo = {
+export interface UserInfo {
   id: string;
   email: string;
   nickname: string;
+  socketId?: string;
   rooms?: Room[];
   updateDate?: Date;
   createdDate?: Date;
-};
+}

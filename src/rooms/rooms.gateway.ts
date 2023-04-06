@@ -22,25 +22,9 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: SocketIoServer;
   logger = new Logger(RoomsGateway.name);
 
-  constructor(private readonly roomGatewayService: RoomsGatewayService, private readonly authService: AuthService) {}
+  constructor(private readonly roomGatewayService: RoomsGatewayService) {}
 
-  async handleConnection(client: Socket) {
-    try {
-      if (client?.handshake?.headers?.authorization) {
-        const rawToken = client?.handshake?.headers?.authorization?.split(' ')?.[1];
-
-        if (!rawToken) return false;
-
-        const { userInfo, token } = await this.authService.validateToken(rawToken);
-        client.handshake['user'] = userInfo;
-      }
-
-      return true;
-    } catch (e) {
-      if (e instanceof ToeknVerifyFailed) return false;
-      else throw e;
-    }
-  }
+  async handleConnection(client: Socket) {}
 
   async handleDisconnect(client: Socket) {
     await this.roomGatewayService.onDisconnection(this.server, client);

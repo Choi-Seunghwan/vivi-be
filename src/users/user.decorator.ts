@@ -1,4 +1,5 @@
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
+import { UserInfo } from 'src/types/auth';
 
 export const AuthUserInfo = createParamDecorator((data: unknown, ctx: ExecutionContext): UserInfo => {
   const req = ctx.switchToHttp().getRequest();

@@ -21,7 +21,6 @@ import { RoomNotFoundException, RoomCreateFailException, RoomStatusException, Ho
 import { ROOM_STATUS } from 'src/constants/room.constant';
 import { ChatMessage } from '../chat/chat-message.entity';
 import { CHAT_MESSAGE_TYPE_SYSTEM, SYSTEM_CHAT_MESSAGE_ROOM_CREATED, SYSTEM_CHAT_MESSAGE_ROOM_MEMBER_JOINED } from 'src/chat/chat.constant';
-import { WsException } from '@nestjs/websockets';
 import { UserInfo } from 'src/types/auth';
 
 @Injectable()
@@ -49,13 +48,14 @@ export class RoomsGatewayService {
     try {
       const { title } = payload;
       const userInfo: UserInfo = getUserInfoFromSocket(client);
+      const hostRoomMember = roomMemberFactory(userInfo);
 
       const rooms: Room[] = await this.roomRepository.find({ where: { host: { id: userInfo.id }, status: ROOM_STATUS.IN_PROGRESS } });
 
       // if (rooms.length) throw new HostAlreadyRoomInProgress();
 
       const createdRoom: Room = this.roomRepository.create({
-        host: userInfo,
+        host: hostRoomMember,
         title,
         status: ROOM_STATUS.IN_PROGRESS,
         startDate: new Date(),
@@ -73,7 +73,7 @@ export class RoomsGatewayService {
       });
       await sendChatMessageToClient(client, systemChatMessage);
 
-      const roomInfo: RoomInfo = await roomInfoFactory(server, createdRoom, userInfo);
+      const roomInfo: RoomInfo = await roomInfoFactory(server, createdRoom, hostRoomMember);
       return roomInfo;
     } catch (e) {
       throw e;
@@ -84,7 +84,8 @@ export class RoomsGatewayService {
     try {
       const { roomId } = payload;
       const member: RoomMember = roomMemberFactory(getUserInfoFromSocket(client));
-      const room = await this.roomRepository.findOne({ where: { id: roomId } });
+      const room = await this.roomRepository.findOne({ where: { id: roomId }, relations: ['host'] });
+      const hostMember: RoomMember = roomMemberFactory(room.host);
 
       if (!room) throw new RoomNotFoundException();
       if (room?.status !== ROOM_STATUS.IN_PROGRESS) throw new RoomStatusException();
@@ -98,7 +99,7 @@ export class RoomsGatewayService {
       });
       await sendMessageNewRoomMemberJoined(server, member, roomId, systemChatMessage);
 
-      const roomInfo = await roomInfoFactory(server, room, room.host);
+      const roomInfo = await roomInfoFactory(server, room, hostMember);
 
       return roomInfo;
     } catch (e) {
