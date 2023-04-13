@@ -8,9 +8,6 @@ export class webSocketJwtAuthGuard extends AuthGuard('webSocketJwt') {
   }
 
   getRequest(ctx: ExecutionContext) {
-    const a = ctx.switchToWs();
-    const b = a.getClient();
-    const c = b.handshake;
     return ctx.switchToWs().getClient().handshake;
   }
 }
