@@ -1,17 +1,14 @@
 import { ROOM_STATUS } from 'src/constants/room.constant';
-import { Socket } from 'socket.io';
-import { User } from 'src/users/user.entity';
 import { Room } from './room.entity';
 import { RoomInfo } from './room.info';
 import { Server } from 'socket.io';
-import { IoAdapter } from '@nestjs/platform-socket.io';
 import { UserInfo } from 'src/types/auth';
 
 export const roomInfoFactory = async (server: Server, room: Room, host: RoomMember): Promise<RoomInfo> => {
   const roomInfo: RoomInfo = new RoomInfo({ roomId: room.id, title: room.title, host });
   const socketMembers = await server.in(room.id).fetchSockets();
 
-  roomInfo.members = socketMembers.map((sMember) => sMember.handshake?.['user']);
+  roomInfo.members = socketMembers.map((sMember) => sMember.data?.['user']);
 
   return roomInfo;
 };

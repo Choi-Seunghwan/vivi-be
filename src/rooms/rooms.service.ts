@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { CloseRoomDto } from './dto/close-room.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './room.entity';
-import { isRoomHost, isRoomStatusInProgress, roomInfoFactory } from './room.utils';
+import { isRoomHost, isRoomStatusInProgress, roomInfoFactory, roomMemberFactory } from './room.utils';
 import { CacheService } from 'src/cache/cache.service';
 import { ROOM_STATUS } from 'src/constants/room.constant';
 import { startRoomDto } from './dto/start-room-dto';
@@ -24,8 +24,14 @@ export class RoomsService {
 
   async getRoomList(server): Promise<RoomInfo[]> {
     try {
-      const rooms: Room[] = await this.roomRepository.find({ where: { status: ROOM_STATUS.IN_PROGRESS } });
-      const roomInfos = Promise.all(rooms.map(async (r) => await roomInfoFactory(server, r, r.host)));
+      const rooms: Room[] = await this.roomRepository.find({ where: { status: ROOM_STATUS.IN_PROGRESS }, relations: ['host'] });
+      const roomInfos = Promise.all(
+        rooms.map(async (r) => {
+          const roomMember = roomMemberFactory(r.host);
+          const roomInfo = await roomInfoFactory(server, r, roomMember);
+          return roomInfo;
+        })
+      );
       return roomInfos;
     } catch (e) {
       this.logger.error(e);
