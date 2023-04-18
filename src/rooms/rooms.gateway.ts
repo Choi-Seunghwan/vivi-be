@@ -48,6 +48,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const roomInfo = await this.roomGatewayService.onCreateRoom(this.server, client, payload);
       return roomInfo;
     } catch (e) {
+      this.logger.error(e);
       return new WsException(e);
     }
   }
@@ -71,6 +72,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const { roomId } = payload;
       return await this.roomGatewayService.onLeaveRoom(this.server, client, roomId);
     } catch (e) {
+      this.logger.error(e);
       return new WsException(e);
     }
   }

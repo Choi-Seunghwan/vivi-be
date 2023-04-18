@@ -10,6 +10,7 @@ import { ConnectionGatewayService } from './connection.gateway.service';
 import { AuthService } from 'src/auth/auth.service';
 import { ToeknVerifyFailed } from 'src/common/common.exception';
 import { SendAnswerPayload } from './payload/send-answer.payload';
+import { sendIceCandidate } from './payload/send-ice-candidate.payload';
 
 @WebSocketGateway()
 @UsePipes(new WSValidationPipe())
@@ -29,6 +30,7 @@ export class ConnectionGateway implements OnGatewayConnection {
 
         const { userInfo, token } = await this.authService.validateToken(rawToken);
         client.handshake['user'] = { ...userInfo, socketId: client.id };
+        client.data['user'] = { ...userInfo, socketId: client.id };
       }
 
       return true;
@@ -50,12 +52,25 @@ export class ConnectionGateway implements OnGatewayConnection {
   }
 
   @UseGuards(webSocketJwtAuthGuard)
-  @SubscribeMessage(MESSAGE_PC.SEND_OFFER)
+  @SubscribeMessage(MESSAGE_PC.SEND_ANSWER)
   async sendAnswerHandler(client: Socket, payload: SendAnswerPayload) {
     try {
       const { answer, socketId } = payload;
       this.connectionGatewayService.sendAnswer(client, { answer, destSocketId: socketId });
     } catch (e) {
+      this.logger.error(e);
+      throw e;
+    }
+  }
+
+  @UseGuards(webSocketJwtAuthGuard)
+  @SubscribeMessage(MESSAGE_PC.SEND_ICE_CANDIDATE)
+  async sendIceCandidate(client: Socket, payload: sendIceCandidate) {
+    try {
+      const { candidate, socketId } = payload;
+      this.connectionGatewayService.sendIceCandidate(client, { candidate, destSocketId: socketId });
+    } catch (e) {
+      this.logger.error(e);
       throw e;
     }
   }

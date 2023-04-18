@@ -11,7 +11,7 @@ import { MESSAGE_CHAT, MESSAGE_PC, MESSAGE_ROOM } from 'src/constants/message.co
 import { UserInfo } from 'src/types/auth';
 
 export const getUserInfoFromSocket = (socket: Socket): UserInfo | undefined => {
-  const userInfo: UserInfo = socket?.handshake?.['user'];
+  const userInfo: UserInfo = socket?.data?.['user'];
   return userInfo;
 };
 
@@ -100,6 +100,14 @@ export const sendOffer = (socket: Socket, { offer, socketId, member }) => {
 export const sendAnswer = (socket: Socket, { answer, socketId, member }) => {
   try {
     socket.to(socketId).emit(MESSAGE_PC.RECEIVE_ANSWER, { answer, member });
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const sendIceCandidate = (socket: Socket, { candidate, socketId, member }) => {
+  try {
+    socket.to(socketId).emit(MESSAGE_PC.RECEIVE_ICE_CANDIDATE, { candidate, member });
   } catch (e) {
     throw e;
   }

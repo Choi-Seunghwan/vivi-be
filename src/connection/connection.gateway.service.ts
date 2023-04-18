@@ -1,6 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Server as SocketIoServer, Socket } from 'socket.io';
-import { getUserInfoFromSocket, sendAnswer as _sendAnswer, sendOffer as _sendOffer } from 'src/utils/socket.util';
+import {
+  getUserInfoFromSocket,
+  sendAnswer as _sendAnswer,
+  sendOffer as _sendOffer,
+  sendIceCandidate as _sendIceCandidate,
+} from 'src/utils/socket.util';
 import { UserInfo } from 'src/types/auth';
 import { roomMemberFactory } from 'src/rooms/room.utils';
 
@@ -29,6 +34,17 @@ export class ConnectionGatewayService {
       const member = roomMemberFactory(userInfo);
 
       _sendAnswer(client, { answer, socketId: destSocketId, member });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async sendIceCandidate(client: Socket, { candidate, destSocketId }: { candidate: object; destSocketId: string }) {
+    try {
+      const userInfo: UserInfo = getUserInfoFromSocket(client);
+      const member = roomMemberFactory(userInfo);
+
+      _sendIceCandidate(client, { candidate, socketId: destSocketId, member });
     } catch (e) {
       throw e;
     }
