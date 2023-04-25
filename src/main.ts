@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { CustomLogger } from './utils/custom-logger';
+import { setupSwagger } from './common/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -19,6 +20,8 @@ async function bootstrap() {
     })
   );
   app.useWebSocketAdapter(new SocketIoAdapter(app));
+
+  setupSwagger(app);
 
   await app.listen(3080);
 }
