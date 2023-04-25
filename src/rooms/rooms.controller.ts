@@ -9,11 +9,14 @@ import { startRoomDto } from './dto/start-room-dto';
 import { RoomInfo } from './room.info';
 import { RoomNotFoundException, RoomStatusException } from 'src/common/room.exception';
 import { RoomsGateway } from './rooms.gateway';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Rooms')
 @Controller('rooms')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService, private readonly roomsGateway: RoomsGateway) {}
 
+  @ApiResponse({ status: 200 })
   @Get('/')
   async getRooms(): Promise<RoomInfo[]> {
     try {
